@@ -1,0 +1,26 @@
+-- Install configuration: ""
+-- Execute custom install script
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description//launch/view_robot.launch.py
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/amr.stl
+-- Symlinking: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/hcsr04.stl
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/lidar.stl
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/package_run_dependencies/amr_description
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/parent_prefix_path/amr_description
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/path.sh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/path.dsv
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.bash
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.sh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.zsh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.dsv
+-- Symlinking: /home/amr/amr_ws/install/amr_description/share/amr_description/package.dsv
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/packages/amr_description
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/cmake/amr_descriptionConfig.cmake
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/cmake/amr_descriptionConfig-version.cmake
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/package.xml
+-- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf
+-- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors
+-- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/meca
+-- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/control
+-- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/robot

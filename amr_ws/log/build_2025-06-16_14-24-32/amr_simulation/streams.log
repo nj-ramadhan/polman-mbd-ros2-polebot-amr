@@ -1,0 +1,37 @@
+[0.028s] Invoking command in '/home/amr/amr_ws/build/amr_simulation': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/amr/amr_ws/src/amr_simulation -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/amr/amr_ws/install/amr_simulation
+[0.069s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.618s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.646s] -- Found ament_lint_auto: 0.17.2 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[0.942s] -- Added test 'flake8' to check Python code syntax and style conventions
+[0.942s] -- Configured 'flake8' exclude dirs and/or files: 
+[0.946s] -- Added test 'lint_cmake' to check CMake code style
+[0.948s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[0.954s] -- Added test 'xmllint' to check XML markup files
+[0.957s] -- Configuring done (0.9s)
+[0.967s] -- Generating done (0.0s)
+[0.972s] -- Build files have been written to: /home/amr/amr_ws/build/amr_simulation
+[0.977s] Invoked command in '/home/amr/amr_ws/build/amr_simulation' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/amr/amr_ws/src/amr_simulation -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/amr/amr_ws/install/amr_simulation
+[0.981s] Invoking command in '/home/amr/amr_ws/build/amr_simulation': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/amr/amr_ws/build/amr_simulation -- -j4 -l4
+[1.058s] Invoked command in '/home/amr/amr_ws/build/amr_simulation' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/amr/amr_ws/build/amr_simulation -- -j4 -l4
+[1.076s] Invoking command in '/home/amr/amr_ws/build/amr_simulation': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/amr/amr_ws/build/amr_simulation
+[1.093s] -- Install configuration: ""
+[1.094s] -- Execute custom install script
+[1.095s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation//launch/spawn_robot.launch.py
+[1.095s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation//launch/world.launch.py
+[1.096s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/worlds/world_test.sdf
+[1.097s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/ament_index/resource_index/package_run_dependencies/amr_simulation
+[1.098s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/ament_index/resource_index/parent_prefix_path/amr_simulation
+[1.098s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/ament_prefix_path.sh
+[1.099s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/ament_prefix_path.dsv
+[1.099s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/path.sh
+[1.099s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/path.dsv
+[1.100s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.bash
+[1.100s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.sh
+[1.101s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.zsh
+[1.101s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.dsv
+[1.102s] -- Symlinking: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/package.dsv
+[1.119s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/ament_index/resource_index/packages/amr_simulation
+[1.119s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/cmake/amr_simulationConfig.cmake
+[1.120s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/cmake/amr_simulationConfig-version.cmake
+[1.120s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/package.xml
+[1.124s] Invoked command in '/home/amr/amr_ws/build/amr_simulation' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/amr/amr_ws/build/amr_simulation

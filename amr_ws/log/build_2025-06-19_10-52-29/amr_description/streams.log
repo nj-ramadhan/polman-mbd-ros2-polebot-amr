@@ -1,0 +1,40 @@
+[0.039s] Invoking command in '/home/amr/amr_ws/build/amr_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/amr/amr_ws/build/amr_description -- -j4 -l4
+[0.171s] Invoked command in '/home/amr/amr_ws/build/amr_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/amr/amr_ws/build/amr_description -- -j4 -l4
+[0.190s] Invoking command in '/home/amr/amr_ws/build/amr_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/amr/amr_ws/build/amr_description
+[0.208s] -- Install configuration: ""
+[0.210s] -- Execute custom install script
+[0.211s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description//launch/view_robot.launch.py
+[0.212s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description//launch/view_xacro_robot.launch.py
+[0.213s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/amr.stl
+[0.214s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/camera.stl
+[0.214s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/hcsr04.stl
+[0.214s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/lidar.stl
+[0.216s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/rviz/amr.rviz
+[0.216s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/package_run_dependencies/amr_description
+[0.218s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/parent_prefix_path/amr_description
+[0.218s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/ament_prefix_path.sh
+[0.219s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/ament_prefix_path.dsv
+[0.220s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/path.sh
+[0.221s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/path.dsv
+[0.222s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.bash
+[0.223s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.sh
+[0.224s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.zsh
+[0.224s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.dsv
+[0.226s] -- Symlinking: /home/amr/amr_ws/install/amr_description/share/amr_description/package.dsv
+[0.244s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/packages/amr_description
+[0.245s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/cmake/amr_descriptionConfig.cmake
+[0.246s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/cmake/amr_descriptionConfig-version.cmake
+[0.247s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/package.xml
+[0.247s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf
+[0.248s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors
+[0.248s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/lidar.xacro
+[0.248s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/camera.xacro
+[0.249s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/ultrasonic_sensors.xacro
+[0.249s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/imu.xacro
+[0.249s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/meca
+[0.250s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/meca/wheel.xacro
+[0.250s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/meca/base.xacro
+[0.250s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/control
+[0.250s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/robot
+[0.250s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/robot/main_robot.xacro
+[0.297s] Invoked command in '/home/amr/amr_ws/build/amr_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/amr/amr_ws/build/amr_description

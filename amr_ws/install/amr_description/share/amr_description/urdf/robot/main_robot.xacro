@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org" name="main_robot">
+
+  <!-- Inclusions des composants -->
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/meca/base.xacro"/>
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/meca/wheel.xacro"/>
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/sensors/ultrasonic_sensors.xacro"/>
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/sensors/lidar.xacro"/>
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/sensors/camera.xacro"/>
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/control/diff_drive.gazebo"/>
+
+  <!-- Capteurs Ultrason -->
+  <xacro:ultrasonic_sensor 
+    name="uls_frontleft" 
+    joint_xyz="0.206 -0.57 0.216"
+    joint_rpy="0 0 0"/>
+  <xacro:ultrasonic_sensor 
+    name="uls_frontright" 
+    joint_xyz="-0.206 -0.57 0.216"
+    joint_rpy="0 0 0"/>
+  <xacro:ultrasonic_sensor 
+    name="uls_backleft" 
+    joint_xyz="0.206 0.405 0.216"
+    joint_rpy="0 0 3.14"/>
+  <xacro:ultrasonic_sensor 
+    name="uls_backright" 
+    joint_xyz="-0.206 0.405 0.216"
+    joint_rpy="0 0 3.14"/>
+
+  <!-- Lidar -->
+  <xacro:lidar_sensor 
+    name="lidar"
+    parent_link="chassis"
+    joint_xyz="0.0 -0.492 0.272"
+    joint_rpy="0 0 0"
+    mesh_xyz="0 0 0"
+    mesh_rpy="0 0 0"
+    mesh="lidar.stl"/>
+
+  <!-- Caméra -->
+  <xacro:camera_sensor 
+    name="camera_left" 
+    parent_link="chassis"
+    joint_xyz="0.24 -0.47 0.216"
+    joint_rpy="0 0 0.7854"
+    mesh_xyz="0 0 0"
+    mesh_rpy="0 0 0"/>
+
+  <!-- Caméra -->
+  <xacro:camera_sensor 
+    name="camera_right" 
+    parent_link="chassis"
+    joint_xyz="-0.24 -0.47 0.216"
+    joint_rpy="0 0 -0.7854"
+    mesh_xyz="0 0 0"
+    mesh_rpy="0 0 0"/>
+
+  <!-- Wheel -->
+  <xacro:wheel
+    name="left_wheel"
+    parent_link="chassis" 
+    joint_xyz="0.34 -0.1 0"
+    joint_rpy="0 0 0"/>
+
+  <xacro:wheel
+    name="right_wheel"
+    parent_link="chassis" 
+    joint_xyz="-0.34 -0.1 0"
+    joint_rpy="0 0 0"/>
+
+</robot>

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="wheel">
+  <xacro:property name="mesh_path" value="$(find amr_description)/meshes"/>
+  <xacro:macro name="wheel" params="
+    name 
+    parent_link 
+    joint_xyz joint_rpy">
+
+    <!-- Lien de la roue -->
+    <link name="${name}">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.106029"/>
+        <inertia ixx="3.18086e-05" ixy="0" ixz="0" iyy="3.18086e-05" iyz="0" izz="4.77129e-05"/>
+      </inertial>
+
+      <!-- Visual -->
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="file://${mesh_path}/wheel.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="${name}_material">
+          <color rgba="0.647 0.647 0.647 1.0"/>
+        </material>
+      </visual>
+
+      <!-- Collision -->
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="file://${mesh_path}/wheel.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Joint entre le chassis et la roue -->
+    <joint name="${name}_joint" type="continuous">
+      <origin xyz="${joint_xyz}" rpy="${joint_rpy}"/>
+      <parent link="${parent_link}"/>
+      <child link="${name}"/>
+      <axis xyz="1 0 0"/>
+      <limit effort="10" velocity="10"/>
+    </joint>
+
+  </xacro:macro>
+</robot>

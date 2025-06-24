@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org" name="main_robot">
+
+<!-- Inclusions des composants -->
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/sensors/ultrasonic_sensors.xacro"/>
+  <xacro:include filename="/home/amr/amr_ws/src/amr_description/urdf/sensors/lidar.xacro"/>
+
+<!-- Capteurs Ultrason -->
+  <xacro:ultrasonic_sensor 
+    name="uls1" 
+    joint_xyz="0.206 -0.563 0.216"/>
+  <xacro:ultrasonic_sensor 
+    name="uls1" 
+    joint_xyz="0.-206 -0.563 0.216"/>
+  <xacro:ultrasonic_sensor 
+    name="uls1" 
+    joint_xyz="0.206 0.563 0.216"/>
+  <xacro:ultrasonic_sensor 
+    name="uls1" 
+    joint_xyz="-0.206 0.563 0.216"/>
+
+<!-- Lidar -->
+  <xacro:lidar_sensor 
+    name="lidar"
+    parent_link="chassis"
+    joint_xyz="0.0 -0.492 0.272"
+    joint_rpy="0 0 0"
+    mesh_xyz="0 0 0"
+    mesh_rpy="0 0 0"
+    mesh="lidar.stl"/>
+</robot>

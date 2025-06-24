@@ -1,0 +1,20 @@
+-- Install configuration: ""
+-- Execute custom install script
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation//launch/spawn_robot.launch.py
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation//launch/world.launch.py
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/worlds/world_test.sdf
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/ament_index/resource_index/package_run_dependencies/amr_simulation
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/ament_index/resource_index/parent_prefix_path/amr_simulation
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/path.sh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/environment/path.dsv
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.bash
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.sh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.zsh
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/local_setup.dsv
+-- Symlinking: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/package.dsv
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/ament_index/resource_index/packages/amr_simulation
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/cmake/amr_simulationConfig.cmake
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/cmake/amr_simulationConfig-version.cmake
+-- Up-to-date symlink: /home/amr/amr_ws/install/amr_simulation/share/amr_simulation/package.xml

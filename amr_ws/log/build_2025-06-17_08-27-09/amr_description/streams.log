@@ -1,0 +1,63 @@
+[0.038s] Invoking command in '/home/amr/amr_ws/build/amr_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/amr/amr_ws/src/amr_description -DCMAKE_INSTALL_PREFIX=/home/amr/amr_ws/install/amr_description
+[0.068s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.484s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.499s] -- Found rclcpp: 28.1.9 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.558s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.576s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.604s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.634s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.782s] -- Found rmw_implementation_cmake: 7.3.2 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.786s] -- Found rmw_fastrtps_cpp: 8.4.2 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.938s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.074s] -- Found urdf: 2.10.0 (/opt/ros/jazzy/share/urdf/cmake)
+[1.094s] -- Found xacro: 2.0.13 (/opt/ros/jazzy/share/xacro/cmake)
+[1.094s] -- Found robot_state_publisher: 3.3.3 (/opt/ros/jazzy/share/robot_state_publisher/cmake)
+[1.459s] -- Found ament_lint_auto: 0.17.2 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.647s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.647s] -- Configured 'flake8' exclude dirs and/or files: 
+[1.648s] -- Added test 'lint_cmake' to check CMake code style
+[1.649s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.653s] -- Added test 'xmllint' to check XML markup files
+[1.656s] -- Configuring done (1.6s)
+[1.666s] -- Generating done (0.0s)
+[1.670s] -- Build files have been written to: /home/amr/amr_ws/build/amr_description
+[1.684s] Invoked command in '/home/amr/amr_ws/build/amr_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/amr/amr_ws/src/amr_description -DCMAKE_INSTALL_PREFIX=/home/amr/amr_ws/install/amr_description
+[1.686s] Invoking command in '/home/amr/amr_ws/build/amr_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/amr/amr_ws/build/amr_description -- -j4 -l4
+[1.764s] Invoked command in '/home/amr/amr_ws/build/amr_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/amr/amr_ws/build/amr_description -- -j4 -l4
+[1.766s] Invoking command in '/home/amr/amr_ws/build/amr_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/amr/amr_ws/build/amr_description
+[1.780s] -- Install configuration: ""
+[1.780s] -- Execute custom install script
+[1.781s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description//launch/view_robot.launch.py
+[1.782s] -- Symlinking: /home/amr/amr_ws/install/amr_description/share/amr_description//launch/view_xacro_robot.launch.py
+[1.801s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/amr.stl
+[1.802s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/hcsr04.stl
+[1.802s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/meshes/lidar.stl
+[1.802s] -- Symlinking: /home/amr/amr_ws/install/amr_description/share/amr_description/rviz/amr.rviz
+[1.824s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/package_run_dependencies/amr_description
+[1.825s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/parent_prefix_path/amr_description
+[1.825s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/ament_prefix_path.sh
+[1.826s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/ament_prefix_path.dsv
+[1.826s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/path.sh
+[1.827s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/environment/path.dsv
+[1.827s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.bash
+[1.827s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.sh
+[1.828s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.zsh
+[1.828s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/local_setup.dsv
+[1.829s] -- Symlinking: /home/amr/amr_ws/install/amr_description/share/amr_description/package.dsv
+[1.845s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/ament_index/resource_index/packages/amr_description
+[1.845s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/cmake/amr_descriptionConfig.cmake
+[1.846s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/cmake/amr_descriptionConfig-version.cmake
+[1.846s] -- Up-to-date symlink: /home/amr/amr_ws/install/amr_description/share/amr_description/package.xml
+[1.847s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf
+[1.847s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors
+[1.847s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/lidar.xacro
+[1.847s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/camera.xacro
+[1.847s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/ultrasonic_sensors.xacro
+[1.847s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/sensors/imu.xacro
+[1.848s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/meca
+[1.848s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/meca/wheel.xacro
+[1.848s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/meca/base.xacro
+[1.848s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/control
+[1.848s] -- Up-to-date: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/robot
+[1.848s] -- Installing: /home/amr/amr_ws/install/amr_description/share/amr_description/urdf/robot/main_robot.xacro
+[1.851s] Invoked command in '/home/amr/amr_ws/build/amr_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/amr/turtlebot3_ws/install/turtlebot3_teleop:/home/amr/turtlebot3_ws/install/turtlebot3_example:/home/amr/ros2_ws/install/teleop_twist_keyboard:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/amr/amr_ws/build/amr_description
