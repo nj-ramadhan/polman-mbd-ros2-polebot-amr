@@ -3,6 +3,7 @@ logs/
 build/
 install/
 log/
+Log/
 bin/
 lib/
 msg_gen/

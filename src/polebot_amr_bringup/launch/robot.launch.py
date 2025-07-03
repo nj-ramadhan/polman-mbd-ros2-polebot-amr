@@ -58,7 +58,7 @@ def generate_launch_description():
     lidar_tf_node = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
-        arguments=['0', '0', '0.15', '0', '0', '3.1416', 'base_link', 'lidar']
+        arguments=['0', '0', '0.21', '0', '0', '3.1416', 'base_link', 'lidar']
     )
 
     joint_state_node = Node(
@@ -101,7 +101,6 @@ def generate_launch_description():
     return LaunchDescription([
         robot_state_node,
         autonics_lsc_lidar_node,
-        # camera_node,
         camera_tf_node,
         orbbec_camera_launch,
         lidar_tf_node,
