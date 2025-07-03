@@ -38,22 +38,29 @@
     mesh="lidar.stl"/>
 
   <!-- Caméra -->
-  <xacro:camera_sensor 
+  <!-- <xacro:camera_sensor 
     name="camera_left" 
     parent_link="chassis"
     joint_xyz="0.24 -0.47 0.216"
     joint_rpy="0 0 0.7854"
     mesh_xyz="0 0 0"
-    mesh_rpy="0 0 0"/>
+    mesh_rpy="0 0 0"/> -->
 
   <!-- Caméra -->
-  <xacro:camera_sensor 
+  <!-- <xacro:camera_sensor 
     name="camera_right" 
     parent_link="chassis"
     joint_xyz="-0.24 -0.47 0.216"
     joint_rpy="0 0 -0.7854"
     mesh_xyz="0 0 0"
-    mesh_rpy="0 0 0"/>
+    mesh_rpy="0 0 0"/> -->
+
+  <link name="camera_link"/>
+  <joint name="camera_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="camera_link"/>
+    <origin xyz="0.0 -0.492 0.12" rpy="0 0 0"/>
+  </joint>
 
   <!-- Wheel -->
   <xacro:wheel

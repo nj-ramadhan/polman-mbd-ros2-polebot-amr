@@ -3,6 +3,9 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch.substitutions import Command
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
 
@@ -11,6 +14,13 @@ def generate_launch_description():
     polebot_amr_bringup_path = get_package_share_directory('polebot_amr_bringup')
     xacro_file = os.path.join(polebot_amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
     rviz_config = os.path.join(polebot_amr_bringup_path, 'rviz', 'polebot_amr.rviz')
+
+    # Orbbec camera launch file path
+    orbbec_camera_launch_path = os.path.join(
+        get_package_share_directory('orbbec_camera'),
+        'launch',
+        'astra.launch.py'
+    )
 
     # Noeuds
     robot_state_node = Node(
@@ -38,21 +48,17 @@ def generate_launch_description():
         }]
     )
 
-    camera_node = Node(
-        package='v4l2_camera',
-        executable='v4l2_camera_node',
-        name='usb_camera',
-        parameters=[{
-            'video_device': '/dev/video0',
-            'frame_id': 'camera_link'
-        }],
-        output='screen'
-    )
-
-    tf2_node = Node(
+    camera_tf_node = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
-        arguments=['0', '0', '0.15', '0', '0', '0', 'base_link', 'lidar']
+        arguments=['0', '0', '0.15', '-1.5708', '0', '0', 'base_link', 'camera_link'],
+        name='camera_link_to_optical_frame'
+    )
+
+    lidar_tf_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0', '0', '0.15', '0', '0', '3.1416', 'base_link', 'lidar']
     )
 
     joint_state_node = Node(
@@ -77,11 +83,28 @@ def generate_launch_description():
         arguments=['-d', rviz_config]
     )
 
+    # Include Orbbec camera launch file with arguments
+    orbbec_camera_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(orbbec_camera_launch_path),
+        launch_arguments={
+            'color_width': '640',
+            'color_height': '480',
+            'color_fps': '30',
+            'color_format': 'MJPG',
+            'depth_width': '640',
+            'depth_height': '480',
+            'depth_fps': '30',
+            'depth_format': 'Y11'
+        }.items()
+    )
+
     return LaunchDescription([
         robot_state_node,
         autonics_lsc_lidar_node,
-        camera_node,
-        tf2_node,
+        # camera_node,
+        camera_tf_node,
+        orbbec_camera_launch,
+        lidar_tf_node,
         joint_state_node,
         joint_state_gui_node,
         rviz_node
