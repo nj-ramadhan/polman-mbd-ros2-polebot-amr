@@ -7,10 +7,10 @@ from launch.substitutions import Command
 def generate_launch_description():
 
     # Chemins
-    amr_description_path = get_package_share_directory('amr_description')
-    amr_bringup_path = get_package_share_directory('amr_bringup')
-    xacro_file = os.path.join(amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
-    rviz_config = os.path.join(amr_bringup_path, 'rviz', 'amr.rviz')
+    polebot_amr_description_path = get_package_share_directory('polebot_amr_description')
+    polebot_amr_bringup_path = get_package_share_directory('polebot_amr_bringup')
+    xacro_file = os.path.join(polebot_amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
+    rviz_config = os.path.join(polebot_amr_bringup_path, 'rviz', 'polebot_amr.rviz')
 
     # Noeuds
     robot_state_node = Node(

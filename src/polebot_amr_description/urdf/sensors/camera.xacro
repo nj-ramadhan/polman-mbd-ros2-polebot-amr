@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="camera">
-  <xacro:property name="mesh_path" value="$(find amr_description)/meshes"/>
+  <xacro:property name="mesh_path" value="$(find polebot_amr_description)/meshes"/>
   <!-- Macro pour une caméra avec pose mesh configurable -->
   <xacro:macro name="camera_sensor" params="
     name 

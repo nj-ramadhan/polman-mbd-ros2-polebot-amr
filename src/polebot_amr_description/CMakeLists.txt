@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(amr_simulation)
+project(polebot_amr_description)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,6 +7,10 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(urdf REQUIRED)
+find_package(xacro REQUIRED)
+find_package(robot_state_publisher REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -34,9 +38,12 @@ install(
   DESTINATION share/${PROJECT_NAME}/
 )
 
-# Installer les fichiers URDF/Xacro et les meshes
-install(DIRECTORY
-  worlds
+install(DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME}
+  FILES_MATCHING PATTERN "*.xacro" PATTERN "*.urdf"
+)
+
+install(DIRECTORY meshes rviz
   DESTINATION share/${PROJECT_NAME}
 )
 

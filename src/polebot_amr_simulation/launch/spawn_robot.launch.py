@@ -9,8 +9,8 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
 
-    pkg_urdf_path = get_package_share_directory('amr_description')
-    pkg_gazebo_path = get_package_share_directory('amr_simulation')
+    pkg_urdf_path = get_package_share_directory('polebot_amr_description')
+    pkg_gazebo_path = get_package_share_directory('polebot_amr_simulation')
 
     gazebo_models_path, ignore_last_dir = os.path.split(pkg_urdf_path)
     #os.environ["GZ_SIM_RESOURCE_PATH"] += os.pathsep + gazebo_models_path
@@ -51,7 +51,7 @@ def generate_launch_description():
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
-        arguments=['-d', os.path.join(pkg_urdf_path, 'rviz', 'amr.rviz')],
+        arguments=['-d', os.path.join(pkg_urdf_path, 'rviz', 'polebot_amr.rviz')],
         condition=IfCondition(LaunchConfiguration('rviz')),
         parameters=[
             {'use_sim_time': True},

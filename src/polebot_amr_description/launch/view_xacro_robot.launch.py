@@ -1,14 +1,12 @@
-import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from ament_index_python.packages import get_package_share_directory
+import os
+import xacro
 
 def generate_launch_description():
-    urdf_file = '/home/amr/amr_ws/src/amr_description/amr.urdf'
-    pkg_urdf_path = get_package_share_directory('amr_description')
-
-    with open(urdf_file, 'r') as file:
-        robot_description_config = file.read()
+    # Génère le contenu URDF à partir du Xacro
+    xacro_file = '/home/amr/polebot_amr_ws/src/polebot_amr_description/urdf/robot/main_robot.xacro'
+    robot_description_config = xacro.process_file(xacro_file).toxml()
 
     return LaunchDescription([
         Node(
@@ -26,8 +24,8 @@ def generate_launch_description():
         Node(
             package='rviz2',
             executable='rviz2',
-            arguments=['-d', os.path.join(pkg_urdf_path, 'rviz', 'amr.rviz')],
             name='rviz2',
             output='screen',
+            arguments=['-d', '/home/amr/polebot_amr_ws/src/polebot_amr_description/rviz/polebot_amr.rviz']
         )
     ])

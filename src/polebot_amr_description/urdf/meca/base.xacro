@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot">
-  <xacro:property name="mesh_path" value="$(find amr_description)/meshes"/>
+  <xacro:property name="mesh_path" value="$(find polebot_amr_description)/meshes"/>
   <link name="world"/> <!-- Frame racine ajoutée -->
 
   <link name="base_link"/>
@@ -15,7 +15,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_path}/amr.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="file://${mesh_path}/polebot_amr.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray">
         <color rgba="0.6 0.6 0.6 1.0"/>
