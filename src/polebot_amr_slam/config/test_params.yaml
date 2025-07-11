@@ -1,0 +1,3 @@
+slam_toolbox:
+  ros__parameters:
+    scan_topic: /scan
