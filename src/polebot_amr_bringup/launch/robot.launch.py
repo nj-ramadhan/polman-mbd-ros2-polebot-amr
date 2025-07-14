@@ -100,11 +100,11 @@ def generate_launch_description():
 
     return LaunchDescription([
         robot_state_node,
+        lidar_tf_node,
         autonics_lsc_lidar_node,
         camera_tf_node,
         orbbec_camera_launch,
-        lidar_tf_node,
         joint_state_node,
-        joint_state_gui_node,
+        # joint_state_gui_node,
         rviz_node
     ])
