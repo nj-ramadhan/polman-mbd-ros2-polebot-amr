@@ -6,6 +6,7 @@ from launch.substitutions import Command
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
 
 def generate_launch_description():
 
@@ -13,7 +14,9 @@ def generate_launch_description():
     polebot_amr_description_path = get_package_share_directory('polebot_amr_description')
     polebot_amr_bringup_path = get_package_share_directory('polebot_amr_bringup')
     xacro_file = os.path.join(polebot_amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
-    rviz_config = os.path.join(polebot_amr_bringup_path, 'rviz', 'polebot_amr.rviz')
+    rviz_config = os.path.join(polebot_amr_bringup_path, 'rviz', 'robot.rviz')
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    joy_params = os.path.join(get_package_share_directory('polebot_amr_bringup'),'config','joystick_ble.yaml')
 
     # Orbbec camera launch file path
     orbbec_camera_launch_path = os.path.join(
@@ -29,7 +32,8 @@ def generate_launch_description():
         name="robot_state_publisher",
         output="screen",
         parameters=[{
-            "robot_description": Command(["xacro ", xacro_file])
+            "robot_description": Command(["xacro ", xacro_file]),
+            "publish_fixed_joints": True
         }]
     )
 
@@ -48,17 +52,30 @@ def generate_launch_description():
         }]
     )
 
+    camera_node = Node(
+        package='v4l2_camera',
+        executable='v4l2_camera_node',
+        name='usb_camera',
+        parameters=[{
+            'video_device': '/dev/video0',
+            'frame_id': 'camera_link'
+        }],
+        output='screen'
+    )
+
     camera_tf_node = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
-        arguments=['0', '0', '0.15', '-1.5708', '0', '0', 'base_link', 'camera_link'],
+        arguments=['0', '0', '0.15', '0', '0', '0', 'base_link', 'camera_link'],
         name='camera_link_to_optical_frame'
     )
 
     lidar_tf_node = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
-        arguments=['0', '0', '0.21', '0', '0', '3.1416', 'base_link', 'lidar']
+        name='lidar_static_tf',
+        output='screen',
+        arguments=['0', '0', '0.15', '0', '0', '0', 'base_link', 'lidar']
     )
 
     joint_state_node = Node(
@@ -98,24 +115,53 @@ def generate_launch_description():
         }.items()
     )
 
-    fake_odom_launch = IncludeLaunchDescription(
+    fake_odom_node = Node(
+        package='polebot_amr_bringup',
+        executable='cmd_vel.launch.py',
+        name='fake_odom_publisher',
+        output='screen'
+    )
+
+    joy_node = Node(
+            package='joy',
+            executable='joy_node',
+            parameters=[joy_params, {'use_sim_time': use_sim_time}],
+         )
+
+    teleop_node = Node(
+            package='teleop_twist_joy',
+            executable='teleop_node',
+            name='teleop_node',
+            parameters=[joy_params, {'use_sim_time': use_sim_time}],
+         )
+    
+    slam_toolbox_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(
-                get_package_share_directory('polebot_amr_bringup'),
+                get_package_share_directory('polebot_amr_slam'),
                 'launch',
-                'cmd_vel.launch.py'
+                'slam_toolbox.launch.py'
             )
         )
     )
+
     
     return LaunchDescription([
+        DeclareLaunchArgument(
+            'use_sim_time',
+            default_value='false',
+            description='Use sim time if true'),
         robot_state_node,
-        lidar_tf_node,
         autonics_lsc_lidar_node,
+        camera_node,
         camera_tf_node,
         orbbec_camera_launch,
+        lidar_tf_node,
         joint_state_node,
-        # joint_state_gui_node,
+        joint_state_gui_node,
         rviz_node,
-        fake_odom_launch,
+        fake_odom_node,
+        joy_node,
+        teleop_node,
+
     ])

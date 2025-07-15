@@ -7,7 +7,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(urdf REQUIRED)
 find_package(xacro REQUIRED)
@@ -35,6 +34,11 @@ install(
 
 install(DIRECTORY rviz
   DESTINATION share/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  polebot_amr_bringup/fake_odom_publisher.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()

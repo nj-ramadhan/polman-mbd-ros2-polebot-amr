@@ -98,7 +98,7 @@ def generate_launch_description():
 
     fake_odom_node = Node(
         package='polebot_amr_bringup',
-        executable='cmd_vel.launch.py',
+        executable='fake_odom_publisher.py',
         name='fake_odom_publisher',
         output='screen'
     )
