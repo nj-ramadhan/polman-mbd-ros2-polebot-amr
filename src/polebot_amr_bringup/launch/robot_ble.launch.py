@@ -52,16 +52,6 @@ def generate_launch_description():
         }]
     )
 
-    camera_node = Node(
-        package='v4l2_camera',
-        executable='v4l2_camera_node',
-        name='usb_camera',
-        parameters=[{
-            'video_device': '/dev/video0',
-            'frame_id': 'camera_link'
-        }],
-        output='screen'
-    )
 
     camera_tf_node = Node(
         package='tf2_ros',
@@ -117,7 +107,7 @@ def generate_launch_description():
 
     fake_odom_node = Node(
         package='polebot_amr_bringup',
-        executable='cmd_vel.launch.py',
+        executable='fake_odom_publisher.py',
         name='fake_odom_publisher',
         output='screen'
     )
@@ -153,7 +143,6 @@ def generate_launch_description():
             description='Use sim time if true'),
         robot_state_node,
         autonics_lsc_lidar_node,
-        camera_node,
         camera_tf_node,
         orbbec_camera_launch,
         lidar_tf_node,
