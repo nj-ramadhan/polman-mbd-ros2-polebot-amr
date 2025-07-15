@@ -82,20 +82,19 @@ def generate_launch_description():
         arguments=['-d', rviz_config]
     )
 
-    #fake_odom_node = Node(
-    #    package='polebot_amr_bringup',
-    #    executable='cmd_vel.launch.py',
-    #    name='fake_odom_publisher',
-    #    output='screen'
-    #)
+    fake_odom_node = Node(
+        package='polebot_amr_bringup',
+        executable='fake_odom_publisher.py',
+        name='fake_odom_publisher',
+        output='screen'
+    )
 
     return LaunchDescription([
            slam_node,
            autonics_lsc_lidar_node,
            robot_state_node,
            rviz_node,
-           #fake_odom_node,
-           #lidar_tf_node,
+           fake_odom_node,
            joint_state_gui_node,
            joint_state_node,
     ])

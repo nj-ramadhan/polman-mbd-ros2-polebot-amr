@@ -21,6 +21,21 @@ def generate_launch_description():
         'launch',
         'astra.launch.py'
     )
+    
+    # Include Orbbec camera launch file with arguments
+    orbbec_camera_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(orbbec_camera_launch_path),
+        launch_arguments={
+            'color_width': '640',
+            'color_height': '480',
+            'color_fps': '30',
+            'color_format': 'MJPG',
+            'depth_width': '640',
+            'depth_height': '480',
+            'depth_fps': '30',
+            'depth_format': 'Y11'
+        }.items()
+    )
 
     # Noeuds
     robot_state_node = Node(
@@ -82,31 +97,6 @@ def generate_launch_description():
         output='screen',
         arguments=['-d', rviz_config]
     )
-
-    # Include Orbbec camera launch file with arguments
-    orbbec_camera_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(orbbec_camera_launch_path),
-        launch_arguments={
-            'color_width': '640',
-            'color_height': '480',
-            'color_fps': '30',
-            'color_format': 'MJPG',
-            'depth_width': '640',
-            'depth_height': '480',
-            'depth_fps': '30',
-            'depth_format': 'Y11'
-        }.items()
-    )
-
-    fake_odom_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('polebot_amr_bringup'),
-                'launch',
-                'cmd_vel.launch.py'
-            )
-        )
-    )
     
     return LaunchDescription([
         robot_state_node,
@@ -115,7 +105,6 @@ def generate_launch_description():
         camera_tf_node,
         orbbec_camera_launch,
         joint_state_node,
-        # joint_state_gui_node,
+        joint_state_gui_node,
         rviz_node,
-        fake_odom_launch,
     ])

@@ -20,6 +20,26 @@ def generate_launch_description():
     xacro_file = os.path.join(polebot_amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
     rviz_config = os.path.join(polebot_amr_slam_path, 'rviz', 'slam.rviz')
 
+    orbbec_camera_launch_path = os.path.join(
+        get_package_share_directory('orbbec_camera'),
+        'launch',
+        'astra.launch.py'
+    )
+
+    orbbec_camera_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(orbbec_camera_launch_path),
+        launch_arguments={
+            'color_width': '640',
+            'color_height': '480',
+            'color_fps': '30',
+            'color_format': 'MJPG',
+            'depth_width': '640',
+            'depth_height': '480',
+            'depth_fps': '30',
+            'depth_format': 'Y11'
+        }.items()
+    )
+
     declare_sim_time_arg = DeclareLaunchArgument(
         'use_sim_time',
         default_value='false',
@@ -67,13 +87,6 @@ def generate_launch_description():
         }]
     )
 
-    #lidar_tf_node = Node(
-    #    executable='static_transform_publisher',
-    #    name='lidar_static_tf',
-    #    output='screen',
-    #    arguments=['0', '0', '0.15', '0', '0', '0', 'base_link', 'lidar']
-    #)
-
     joint_state_node = Node(
         package="joint_state_publisher",
         executable="joint_state_publisher",
@@ -86,6 +99,19 @@ def generate_launch_description():
         executable="joint_state_publisher_gui",
         name="joint_state_publisher_gui",
         output="screen"
+    )
+
+    camera_tf_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0', '0', '0.15', '-1.5708', '0', '0', 'chassis', 'camera_link'],
+        name='camera_link_to_optical_frame'
+    )
+
+    lidar_tf_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0', '0', '0.21', '0', '0', '0', 'chassis', 'lidar']
     )
 
     rviz_node = Node(
@@ -104,12 +130,15 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        robot_state_node,
+        lidar_tf_node,
+        autonics_lsc_lidar_node,
+        camera_tf_node,
+        orbbec_camera_launch,
         declare_sim_time_arg,
         slam_toolbox_launch,
-        autonics_lsc_lidar_node,
         joint_state_node,
         joint_state_gui_node,
         rviz_node,
         fake_odom_node,
-        robot_state_node,
     ])
