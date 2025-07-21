@@ -100,6 +100,16 @@ def generate_launch_description():
         }.items()
     )
 
+    roboteq_driver_launch_path = os.path.join(
+        get_package_share_directory('roboteq_ros2_driver'),
+        'launch',
+        'roboteq_ros2_driver.launch.py'
+    )
+
+    roboteq_driver_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(roboteq_driver_launch_path),
+    )
+
     slam_toolbox_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(
@@ -138,6 +148,7 @@ def generate_launch_description():
         autonics_lsc_lidar_node,
         camera_tf_node,
         orbbec_camera_launch,
+        roboteq_driver_launch,
         slam_toolbox_launch,
         fake_odom_node,
         rviz_node,
