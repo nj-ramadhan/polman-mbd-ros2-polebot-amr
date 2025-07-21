@@ -46,7 +46,7 @@
 
     <!-- Joint fixe entre le capteur et le parent -->
     <joint name="${name}_joint" type="fixed">
-      <parent link="chassis"/>
+      <parent link="base_link"/>
       <child link="${name}"/>
       <origin xyz="${joint_xyz}" rpy="${joint_rpy}"/>
     </joint>

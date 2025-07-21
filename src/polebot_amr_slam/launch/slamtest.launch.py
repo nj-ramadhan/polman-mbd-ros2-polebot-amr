@@ -130,7 +130,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        declare_sim_time_arg,
+        # declare_sim_time_arg,
         robot_state_node,
         joint_state_node,
         # joint_state_gui_node,

@@ -29,7 +29,7 @@
   <!-- Lidar -->
   <xacro:lidar_sensor 
     name="lidar"
-    parent_link="chassis"
+    parent_link="base_link"
     joint_xyz="0.0 -0.492 0.272"
     joint_rpy="0 0 0"
     mesh_xyz="0 0 0"
@@ -38,19 +38,10 @@
 
   <!-- Caméra -->
   <xacro:camera_sensor 
-    name="camera_left" 
-    parent_link="chassis"
-    joint_xyz="0.24 -0.47 0.216"
-    joint_rpy="0 0 0.7854"
-    mesh_xyz="0 0 0"
-    mesh_rpy="0 0 0"/>
-
-  <!-- Caméra -->
-  <xacro:camera_sensor 
-    name="camera_right" 
-    parent_link="chassis"
-    joint_xyz="-0.24 -0.47 0.216"
-    joint_rpy="0 0 -0.7854"
+    name="camera" 
+    parent_link="base_link"
+    joint_xyz="0.0 -0.47 0.216"
+    joint_rpy="0 0 0"
     mesh_xyz="0 0 0"
     mesh_rpy="0 0 0"/>
 </robot>

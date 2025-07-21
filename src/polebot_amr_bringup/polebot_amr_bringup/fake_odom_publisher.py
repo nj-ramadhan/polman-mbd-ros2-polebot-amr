@@ -17,7 +17,7 @@ class FakeOdomPublisher(Node):
         self.publisher_ = self.create_publisher(Odometry, 'odom', 10)
         self.subscription = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
 
-        self.timer = self.create_timer(0.05, self.update_pose)
+        self.timer = self.create_timer(0.02, self.update_pose)
 
         self.x = 0.0
         self.y = 0.0
@@ -33,6 +33,12 @@ class FakeOdomPublisher(Node):
     def update_pose(self):
         current_time = self.get_clock().now()
         dt = (current_time - self.last_time).nanoseconds / 1e9
+        # If dt is too large, skip this update to avoid jumps
+        if dt > 0.2:
+            self.last_time = current_time
+            self.get_logger().warn(f"Skipping odom update due to large dt: {dt:.2f}s")
+            return
+        dt = min(dt, 0.1)
         self.last_time = current_time
 
         delta_x = self.vx * math.cos(self.th) * dt
@@ -54,6 +60,8 @@ class FakeOdomPublisher(Node):
 
         qz = math.sin(self.th / 2.0)
         qw = math.cos(self.th / 2.0)
+        t.transform.rotation.x = 0.0
+        t.transform.rotation.y = 0.0
         t.transform.rotation.z = qz
         t.transform.rotation.w = qw
 
@@ -66,6 +74,8 @@ class FakeOdomPublisher(Node):
         odom.child_frame_id = 'base_footprint'
         odom.pose.pose.position.x = self.x
         odom.pose.pose.position.y = self.y
+        odom.pose.pose.orientation.x = 0.0
+        odom.pose.pose.orientation.y = 0.0
         odom.pose.pose.orientation.z = qz
         odom.pose.pose.orientation.w = qw
         odom.twist.twist.linear.x = self.vx
