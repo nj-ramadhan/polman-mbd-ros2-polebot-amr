@@ -91,10 +91,10 @@ def generate_launch_description():
 
     return LaunchDescription([
            slam_node,
-           autonics_lsc_lidar_node,
-           robot_state_node,
-           rviz_node,
-           fake_odom_node,
-           joint_state_gui_node,
-           joint_state_node,
+        #    autonics_lsc_lidar_node,
+        #    robot_state_node,
+        #    rviz_node,
+        #    fake_odom_node,
+        #    joint_state_gui_node,
+        #    joint_state_node,
     ])

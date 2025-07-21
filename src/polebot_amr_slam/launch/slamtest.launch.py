@@ -20,62 +20,12 @@ def generate_launch_description():
     xacro_file = os.path.join(polebot_amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
     rviz_config = os.path.join(polebot_amr_slam_path, 'rviz', 'slam.rviz')
 
-    orbbec_camera_launch_path = os.path.join(
-        get_package_share_directory('orbbec_camera'),
-        'launch',
-        'astra.launch.py'
-    )
-
-    orbbec_camera_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(orbbec_camera_launch_path),
-        launch_arguments={
-            'color_width': '640',
-            'color_height': '480',
-            'color_fps': '30',
-            'color_format': 'MJPG',
-            'depth_width': '640',
-            'depth_height': '480',
-            'depth_fps': '30',
-            'depth_format': 'Y11'
-        }.items()
-    )
-
     declare_sim_time_arg = DeclareLaunchArgument(
         'use_sim_time',
         default_value='false',
         description='Use simulation (Gazebo) clock if true'
     )
 
-    slam_toolbox_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            os.path.join(
-                get_package_share_directory('slam_toolbox'),
-                'launch',
-                'online_sync_launch.py'
-            )
-        ]),
-        launch_arguments={
-            'use_sim_time': LaunchConfiguration('use_sim_time'),
-            'slam_params_file': slam_params
-        }.items()
-    )
-
-    autonics_lsc_lidar_node = Node(
-        package='lsc_ros2_driver',
-        executable='autonics_lsc_lidar',
-        name='autonics_lidar',
-        output='screen',
-        parameters=[{
-            'addr': '192.168.0.1',
-            'port': 8000,
-            'frame_id': 'lidar',
-            'range_min': 0.05,
-            'range_max': 25.0,
-            'intensities': True
-        }]
-    )
-
-    # Noeuds
     robot_state_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -101,17 +51,74 @@ def generate_launch_description():
         output="screen"
     )
 
-    camera_tf_node = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        arguments=['0', '0', '0.15', '-1.5708', '0', '0', 'chassis', 'camera_link'],
-        name='camera_link_to_optical_frame'
-    )
-
     lidar_tf_node = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
-        arguments=['0', '0', '0.21', '0', '0', '0', 'chassis', 'lidar']
+        arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'lidar']
+    )
+
+    autonics_lsc_lidar_node = Node(
+        package='lsc_ros2_driver',
+        executable='autonics_lsc_lidar',
+        name='autonics_lidar',
+        output='screen',
+        parameters=[{
+            'addr': '192.168.0.1',
+            'port': 8000,
+            'frame_id': 'lidar',
+            'range_min': 0.05,
+            'range_max': 25.0,
+            'intensities': True
+        }]
+    )
+
+    camera_tf_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0', '0', '0', '1.57', '0', '0', 'base_link', 'camera_link'],
+        name='camera_link_to_optical_frame'
+    )
+
+
+    orbbec_camera_launch_path = os.path.join(
+        get_package_share_directory('orbbec_camera'),
+        'launch',
+        'astra.launch.py'
+    )
+
+    orbbec_camera_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(orbbec_camera_launch_path),
+        launch_arguments={
+            'color_width': '640',
+            'color_height': '480',
+            'color_fps': '30',
+            'color_format': 'MJPG',
+            'depth_width': '640',
+            'depth_height': '480',
+            'depth_fps': '30',
+            'depth_format': 'Y11'
+        }.items()
+    )
+
+    slam_toolbox_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(
+                get_package_share_directory('slam_toolbox'),
+                'launch',
+                'online_sync_launch.py'
+            )
+        ]),
+        launch_arguments={
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+            'slam_params_file': slam_params
+        }.items()
+    )
+
+    fake_odom_node = Node(
+        package='polebot_amr_bringup',
+        executable='fake_odom_publisher.py',
+        name='fake_odom_publisher',
+        output='screen'
     )
 
     rviz_node = Node(
@@ -122,23 +129,16 @@ def generate_launch_description():
         arguments=['-d', rviz_config]
     )
 
-    fake_odom_node = Node(
-        package='polebot_amr_bringup',
-        executable='fake_odom_publisher.py',
-        name='fake_odom_publisher',
-        output='screen'
-    )
-
     return LaunchDescription([
+        declare_sim_time_arg,
         robot_state_node,
+        joint_state_node,
+        # joint_state_gui_node,
         lidar_tf_node,
         autonics_lsc_lidar_node,
         camera_tf_node,
         orbbec_camera_launch,
-        declare_sim_time_arg,
         slam_toolbox_launch,
-        joint_state_node,
-        joint_state_gui_node,
-        rviz_node,
         fake_odom_node,
+        rviz_node,
     ])

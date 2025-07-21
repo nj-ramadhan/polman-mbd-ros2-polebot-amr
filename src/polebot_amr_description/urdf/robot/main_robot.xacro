@@ -9,7 +9,6 @@
   <xacro:include filename="/home/amr/polebot_amr_ws/src/polebot_amr_description/urdf/sensors/camera.xacro"/>
   <xacro:include filename="/home/amr/polebot_amr_ws/src/polebot_amr_description/urdf/control/diff_drive.gazebo"/>
 
-  <!-- Capteurs Ultrason -->
   <xacro:ultrasonic_sensor 
     name="uls_frontleft" 
     joint_xyz="0.206 -0.57 0.216"
@@ -32,18 +31,26 @@
     name="lidar"
     parent_link="chassis"
     joint_xyz="0.0 -0.492 0.272"
-    joint_rpy="0 0 3.14"
+    joint_rpy="0 0 0"
     mesh_xyz="0 0 0"
     mesh_rpy="0 0 0"
     mesh="lidar.stl"/>
 
   <!-- Caméra -->
-  <link name="camera_link"/>
+  <xacro:camera_sensor 
+    name="camera_left" 
+    parent_link="chassis"
+    joint_xyz="0.24 -0.47 0.216"
+    joint_rpy="0 0 0.7854"
+    mesh_xyz="0 0 0"
+    mesh_rpy="0 0 0"/>
 
-  <joint name="camera_joint" type="fixed">
-    <parent link="chassis"/>
-    <child link="camera_link"/>
-    <origin xyz="0.0 -0.492 0.12" rpy="0 0 1.57"/>
-  </joint>
-
+  <!-- Caméra -->
+  <xacro:camera_sensor 
+    name="camera_right" 
+    parent_link="chassis"
+    joint_xyz="-0.24 -0.47 0.216"
+    joint_rpy="0 0 -0.7854"
+    mesh_xyz="0 0 0"
+    mesh_rpy="0 0 0"/>
 </robot>

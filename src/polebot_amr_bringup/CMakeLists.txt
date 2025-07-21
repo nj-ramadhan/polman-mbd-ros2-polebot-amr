@@ -36,6 +36,11 @@ install(DIRECTORY rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+
 install(PROGRAMS
   polebot_amr_bringup/fake_odom_publisher.py
   DESTINATION lib/${PROJECT_NAME}
