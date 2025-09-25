@@ -143,13 +143,13 @@ def generate_launch_description():
         # declare_sim_time_arg,
         robot_state_node,
         joint_state_node,
-        # joint_state_gui_node,
+
         lidar_tf_node,
         autonics_lsc_lidar_node,
+
         camera_tf_node,
         orbbec_camera_launch,
-        roboteq_driver_launch,
+
         slam_toolbox_launch,
-        fake_odom_node,
         rviz_node,
     ])

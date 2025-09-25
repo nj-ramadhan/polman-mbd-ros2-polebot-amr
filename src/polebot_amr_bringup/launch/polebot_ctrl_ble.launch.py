@@ -14,9 +14,9 @@ def generate_launch_description():
     polebot_amr_description_path = get_package_share_directory('polebot_amr_description')
     polebot_amr_bringup_path = get_package_share_directory('polebot_amr_bringup')
     xacro_file = os.path.join(polebot_amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
-    rviz_config = os.path.join(polebot_amr_bringup_path, 'rviz', 'polebot_amr.rviz')
+    rviz_config = os.path.join(polebot_amr_bringup_path, 'rviz', 'robot.rviz')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    joy_params = os.path.join(get_package_share_directory('polebot_amr_bringup'),'config','joystick.yaml')
+    joy_params = os.path.join(get_package_share_directory('polebot_amr_bringup'),'config','joystick_ble.yaml')
 
     # Orbbec camera launch file path
     orbbec_camera_launch_path = os.path.join(
@@ -52,10 +52,11 @@ def generate_launch_description():
         }]
     )
 
+
     camera_tf_node = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
-        arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'camera_link'],
+        arguments=['0', '0', '0.15', '0', '0', '0', 'base_link', 'camera_link'],
         name='camera_link_to_optical_frame'
     )
 
@@ -64,7 +65,7 @@ def generate_launch_description():
         executable='static_transform_publisher',
         name='lidar_static_tf',
         output='screen',
-        arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'lidar']
+        arguments=['0', '0', '0.15', '0', '0', '0', 'base_link', 'lidar']
     )
 
     joint_state_node = Node(
@@ -129,7 +130,7 @@ def generate_launch_description():
             os.path.join(
                 get_package_share_directory('polebot_amr_slam'),
                 'launch',
-                'slamtest.launch.py'
+                'polebot_slam.launch.py'
             )
         )
     )
@@ -140,17 +141,16 @@ def generate_launch_description():
             'use_sim_time',
             default_value='false',
             description='Use sim time if true'),
-        # robot_state_node,
-        # autonics_lsc_lidar_node,
-        # camera_tf_node,
-        # orbbec_camera_launch,
-        # lidar_tf_node,
-        # joint_state_node,
-        # joint_state_gui_node,
-        # rviz_node,
-        # fake_odom_node,
+        robot_state_node,
+        autonics_lsc_lidar_node,
+        camera_tf_node,
+        orbbec_camera_launch,
+        lidar_tf_node,
+        joint_state_node,
+        joint_state_gui_node,
+        rviz_node,
+        fake_odom_node,
         joy_node,
         teleop_node,
-        slam_toolbox_launch,
 
     ])
