@@ -8,17 +8,17 @@
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 -1.57"/>
   </joint>
 
   <link name="chassis">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 1.57"/>
       <geometry>
         <mesh filename="file://${mesh_path}/polebot_amr.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray">
-        <color rgba="0.6 0.6 0.6 1.0"/>
+        <color rgba="0.3 0.3 0.3 1.0"/>
       </material>
     </visual>
     <collision>
