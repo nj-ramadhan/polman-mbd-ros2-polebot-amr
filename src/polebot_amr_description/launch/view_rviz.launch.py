@@ -6,7 +6,7 @@ import xacro
 
 def generate_launch_description():
     description_pkg_path = FindPackageShare('polebot_amr_description').find('polebot_amr_description')       
-    xacro_file = os.path.join(description_pkg_path, 'robot', 'polebot_amr.xacro')
+    xacro_file = os.path.join(description_pkg_path, 'urdf', 'robot', 'polebot_amr.xacro')
 
     # Pass 'package_path' as an argument to xacro
     robot_description_config = xacro.process_file(
