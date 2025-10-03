@@ -8,17 +8,17 @@
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0" rpy="0 0 -1.57"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
   <link name="chassis">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 1.57"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_path}/polebot_amr.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://polebot_amr_description/meshes/polebot_amr.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray">
-        <color rgba="0.3 0.3 0.3 1.0"/>
+        <color rgba="0.5 0.5 0.5 1.0"/>
       </material>
     </visual>
     <collision>
@@ -69,7 +69,7 @@
   <joint name="left_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="left_wheel"/>
-    <origin xyz="0.375 0.3 0.07" rpy="1.57 0 1.57"/> <!-- Position à adapter -->
+    <origin xyz="0.375 0.3 0.07" rpy="1.57 0 0"/> <!-- Position à adapter -->
     <axis xyz="0 -1 0">
         <dynamics damping="1.0" friction="0.5"/>  <!-- Ajout ici -->
     </axis>
@@ -103,7 +103,7 @@
   <joint name="right_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="right_wheel"/>
-    <origin xyz="-0.375 0.3 0.07" rpy="1.57 0 1.57"/> <!-- Position à adapter -->
+    <origin xyz="-0.375 0.3 0.07" rpy="1.57 0 0"/> <!-- Position à adapter -->
     <axis xyz="0 -1 0">
         <dynamics damping="1.0" friction="0.5"/>  <!-- Ajout ici -->
     </axis>
@@ -133,7 +133,7 @@
   <joint name="front_left_caster_joint" type="continuous">
     <parent link="base_link"/>
     <child link="front_left_caster"/>
-    <origin xyz="0.375 -0.3 0.07" rpy="1.57 0 1.57"/> <!-- Position adaptée -->
+    <origin xyz="0.375 -0.3 0.07" rpy="1.57 0 0"/> <!-- Position adaptée -->
     <axis xyz="0 -1 0"/>
   </joint>
 
@@ -161,7 +161,63 @@
   <joint name="front_right_caster_joint" type="continuous">
     <parent link="base_link"/>
     <child link="front_right_caster"/>
-    <origin xyz="-0.375 -0.3 0.07" rpy="1.57 0 1.57"/> <!-- Position adaptée -->
+    <origin xyz="-0.375 -0.3 0.07" rpy="1.57 0 0"/> <!-- Position adaptée -->
+    <axis xyz="0 -1 0"/>
+  </joint>
+
+  <link name="rear_left_caster">
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.41" ixy="0" ixz="0" iyy="0.755" iyz="0" izz="0.755"/>
+    </inertial>
+    <collision>
+      <geometry>
+        <cylinder radius="0.07" length="0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+
+  <joint name="rear_left_caster_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_left_caster"/>
+    <origin xyz="0.375 -0.3 0.07" rpy="1.57 0 0"/> <!-- Position adaptée -->
+    <axis xyz="0 -1 0"/>
+  </joint>
+
+  <link name="rear_right_caster">
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.41" ixy="0" ixz="0" iyy="0.755" iyz="0" izz="0.755"/>
+    </inertial>
+    <collision>
+      <geometry>
+        <cylinder radius="0.07" length="0.05"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+
+  <joint name="rear_right_caster_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_right_caster"/>
+    <origin xyz="-0.375 -0.3 0.07" rpy="1.57 0 0"/> <!-- Position adaptée -->
     <axis xyz="0 -1 0"/>
   </joint>
 

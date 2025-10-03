@@ -4,7 +4,6 @@ import os
 import xacro
 
 def generate_launch_description():
-    # Génère le contenu URDF à partir du Xacro
     xacro_file = '/home/amr/polebot_amr_ws/src/polebot_amr_description/urdf/robot/main_robot.xacro'
     robot_description_config = xacro.process_file(xacro_file).toxml()
 

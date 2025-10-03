@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="camera">
   <xacro:property name="mesh_path" value="$(find polebot_amr_description)/meshes"/>
-  <!-- Macro pour une caméra avec pose mesh configurable -->
   <xacro:macro name="camera_sensor" params="
     name 
     parent_link 
@@ -18,7 +17,7 @@
       <visual>
         <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
         <geometry>
-          <mesh filename="file://${mesh_path}/camera.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://polebot_amr_description/meshes/camera.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${name}_material">
           <color rgba="0.8 0.8 0.8 1.0"/>
@@ -28,7 +27,7 @@
       <collision>
         <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
         <geometry>
-          <mesh filename="file://${mesh_path}/camera.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://polebot_amr_description/meshes/camera.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
     </link>

@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="lidar">
   <xacro:property name="mesh_path" value="$(find polebot_amr_description)/meshes"/>
-  <!-- Macro lidar avec visual et collision identiques -->
   <xacro:macro name="lidar_sensor" params="
     name 
     parent_link 
     joint_xyz joint_rpy 
-    mesh_xyz mesh_rpy 
-    mesh
+    mesh_xyz mesh_rpy
     update_rate:=10
     ray_count:=270
     min_angle:='-3.1456'
@@ -31,10 +29,10 @@
       <visual>
         <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
         <geometry>
-          <mesh filename="file://${mesh_path}/${mesh}" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://polebot_amr_description/meshes/lidar.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${name}_material">
-          <color rgba="0.301961 0.290196 0.262745 1.0"/>
+          <color rgba="0.2 0.2 0.2 1.0"/>
         </material>
       </visual>
 
@@ -42,7 +40,7 @@
       <collision>
         <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
         <geometry>
-          <mesh filename="file://${mesh_path}/${mesh}" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://polebot_amr_description/meshes/lidar.stl" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
     </link>

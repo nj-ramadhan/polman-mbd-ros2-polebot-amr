@@ -5,15 +5,12 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command
 from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
-
-    pkg_urdf_path = get_package_share_directory('polebot_amr_description')
+    pkg_urdf_path = FindPackageShare('polebot_amr_description').find('polebot_amr_description')
     pkg_gazebo_path = get_package_share_directory('polebot_amr_simulation')
-
-    gazebo_models_path, ignore_last_dir = os.path.split(pkg_urdf_path)
-    #os.environ["GZ_SIM_RESOURCE_PATH"] += os.pathsep + gazebo_models_path
 
     rviz_launch_arg = DeclareLaunchArgument(
         'rviz', default_value='true',
@@ -63,7 +60,7 @@ def generate_launch_description():
         package="ros_gz_sim",
         executable="create",
         arguments=[
-            "-name", "my_robot",
+            "-name", "polebot_amr",
             "-topic", "robot_description",
             "-x", "0.0", "-y", "0.0", "-z", "0.0", "-Y", "0.0"  # Initial spawn position
         ],
@@ -79,8 +76,14 @@ def generate_launch_description():
         name='robot_state_publisher',
         output='screen',
         parameters=[
-            {'robot_description': Command(['xacro', ' ', urdf_file_path]),
-             'use_sim_time': True},
+            {
+                'robot_description': Command([
+                    'xacro',
+                    ' ', urdf_file_path,
+                    ' package_path:=', pkg_urdf_path
+                ]),
+                'use_sim_time': True,
+            }
         ],
         remappings=[
             ('/tf', 'tf'),

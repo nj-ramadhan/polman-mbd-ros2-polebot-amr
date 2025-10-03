@@ -38,14 +38,10 @@ install(
   DESTINATION share/${PROJECT_NAME}/
 )
 
-install(DIRECTORY urdf
+install(DIRECTORY
+  assets/
   DESTINATION share/${PROJECT_NAME}
-  FILES_MATCHING PATTERN "*.xacro" PATTERN "*.urdf"
+  FILES_MATCHING PATTERN "*.xacro" PATTERN "*.urdf" PATTERN "*.stl" PATTERN "*.rviz"
 )
-
-install(DIRECTORY meshes rviz
-  DESTINATION share/${PROJECT_NAME}
-)
-
 
 ament_package()
