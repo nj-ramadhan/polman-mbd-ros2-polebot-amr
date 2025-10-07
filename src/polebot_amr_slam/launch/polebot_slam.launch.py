@@ -7,6 +7,8 @@ from launch.actions import DeclareLaunchArgument
 from ament_index_python.packages import get_package_share_directory
 import os
 from launch.substitutions import Command
+from launch_ros.substitutions import FindPackageShare
+import xacro
 
 def generate_launch_description():
     slam_params = os.path.join(
@@ -15,10 +17,17 @@ def generate_launch_description():
         'mapper_params_online_sync.yaml'
     )
     # Chemins
-    polebot_amr_description_path = get_package_share_directory('polebot_amr_description')
+    description_pkg_path = FindPackageShare('polebot_amr_description').find('polebot_amr_description')
+    print(description_pkg_path) 
     polebot_amr_slam_path = get_package_share_directory('polebot_amr_slam')
-    xacro_file = os.path.join(polebot_amr_description_path, 'urdf', 'robot', 'main_robot.xacro')
+    xacro_file = os.path.join(description_pkg_path, 'urdf', 'robot', 'polebot_amr.xacro')
     rviz_config = os.path.join(polebot_amr_slam_path, 'rviz', 'slam.rviz')
+
+    # Pass 'package_path' as an argument to xacro
+    robot_description_config = xacro.process_file(
+        xacro_file,
+        mappings={'package_path': description_pkg_path}
+    ).toxml()
 
     declare_sim_time_arg = DeclareLaunchArgument(
         'use_sim_time',
@@ -31,10 +40,7 @@ def generate_launch_description():
         executable="robot_state_publisher",
         name="robot_state_publisher",
         output="screen",
-        parameters=[{
-            "robot_description": Command(["xacro ", xacro_file]),
-            "publish_fixed_joints": True
-        }]
+        parameters=[{'robot_description': robot_description_config}]
     )
 
     joint_state_node = Node(
