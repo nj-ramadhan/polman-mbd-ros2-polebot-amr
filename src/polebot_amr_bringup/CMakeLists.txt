@@ -36,17 +36,13 @@ install(DIRECTORY rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(DIRECTORY scripts
+install(DIRECTORY params
   DESTINATION share/${PROJECT_NAME}
 )
 
 install(PROGRAMS
   polebot_amr_bringup/fake_odom_publisher.py
-  scripts/ultrasonic_broadcaster.py
+  polebot_amr_bringup/ultrasonic_broadcaster.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -245,8 +245,8 @@ def generate_launch_description():
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(start_robot_state_publisher_cmd)
-    ld.add_action(joint_state_publisher_cmd)
 
+    ld.add_action(joint_state_publisher_cmd)
     ld.add_action(controller_manager_node)
     ld.add_action(spawn_joint_state_broadcaster)
     ld.add_action(spawn_diff_drive_controller)
