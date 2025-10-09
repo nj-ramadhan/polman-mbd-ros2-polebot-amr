@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org" name="polebot_amr">
-  <xacro:arg name="package_path" default="" />
-  <xacro:property name="mecha_path" value="$(arg package_path)/urdf/mecha"/>
-  <xacro:property name="sensor_path" value="$(arg package_path)/urdf/sensors"/>
-  
-  <xacro:include filename="$(arg package_path)/urdf/mecha/base.xacro"/>
-  <xacro:include filename="$(arg package_path)/urdf/mecha/wheel.xacro"/>
-  <xacro:include filename="$(arg package_path)/urdf/sensors/ultrasonic.xacro"/>
-  <xacro:include filename="$(arg package_path)/urdf/sensors/lidar.xacro"/>
-  <xacro:include filename="$(arg package_path)/urdf/sensors/camera.xacro"/>
+
+  <xacro:include filename="$(find polebot_amr_description)/urdf/mecha/base.xacro"/>
+  <xacro:include filename="$(find polebot_amr_description)/urdf/mecha/wheel.xacro"/>
+  <xacro:include filename="$(find polebot_amr_description)/urdf/sensors/ultrasonic.xacro"/>
+  <xacro:include filename="$(find polebot_amr_description)/urdf/sensors/lidar.xacro"/>
+  <xacro:include filename="$(find polebot_amr_description)/urdf/sensors/camera.xacro"/>
 
   <xacro:ultrasonic_sensor 
     name="uls_frontleft"
@@ -34,7 +31,7 @@
   <xacro:lidar_sensor 
     name="lidar"
     parent_link="base_link"
-    joint_xyz="0.465 0.0 0.272"
+    joint_xyz="0.470 0.0 0.272"
     joint_rpy="0 0 0"
     mesh_xyz="0 0 0"
     mesh_rpy="0 0 0"

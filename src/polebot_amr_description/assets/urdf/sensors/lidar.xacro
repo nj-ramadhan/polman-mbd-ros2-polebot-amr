@@ -18,7 +18,7 @@
     visualize:=false
     enable_collision:=false">
 
-    <link name="${name}">
+    <link name="${name}_link">
       <inertial>
         <origin xyz="0 0 0.00977" rpy="0 0 0"/>
         <mass value="0.02915"/>
@@ -49,13 +49,13 @@
     <joint name="${name}_joint" type="fixed">
       <origin xyz="${joint_xyz}" rpy="${joint_rpy}"/>
       <parent link="${parent_link}"/>
-      <child link="${name}"/>
+      <child link="${name}_link"/>
       <axis xyz="0 0 1"/>
       <limit effort="10" velocity="10"/>
     </joint>
 
-    <gazebo reference="${name}">
-      <sensor name="lidar_sensor" type="gpu_lidar">
+    <gazebo reference="${name}_link">
+      <sensor name="lidar" type="gpu_lidar">
         <topic>${topic_name}</topic>
         <update_rate>${update_rate}</update_rate>
         <always_on>${always_on}</always_on>
@@ -82,7 +82,7 @@
             <resolution>${range_resolution}</resolution>
           </range>
         </lidar>
-        <gz_frame_id>${name}</gz_frame_id>
+        <gz_frame_id>${name}_link</gz_frame_id>
       </sensor>
     </gazebo>
   </xacro:macro>

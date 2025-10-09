@@ -1,148 +1,128 @@
 import os
-from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.conditions import IfCondition
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
+from pathlib import Path
+
 from ament_index_python.packages import get_package_share_directory
 
+from launch import LaunchDescription
+from launch.actions import AppendEnvironmentVariable
+from launch.actions import DeclareLaunchArgument
+from launch.conditions import IfCondition
+from launch.substitutions import Command
+from launch.substitutions import LaunchConfiguration
+
+from launch_ros.actions import Node
+
+
 def generate_launch_description():
-    pkg_urdf_path = FindPackageShare('polebot_amr_description').find('polebot_amr_description')
-    pkg_gazebo_path = get_package_share_directory('polebot_amr_simulation')
+    sim_dir = get_package_share_directory('polebot_amr_simulation')
+    desc_dir = get_package_share_directory('polebot_amr_description')
 
-    rviz_launch_arg = DeclareLaunchArgument(
-        'rviz', default_value='true',
-        description='Open RViz.'
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    namespace = LaunchConfiguration('namespace')
+    use_simulator = LaunchConfiguration('use_simulator')
+    robot_name = LaunchConfiguration('robot_name')
+    # robot_sdf = LaunchConfiguration('robot_sdf')
+    pose = {'x': LaunchConfiguration('x_pose', default='-8.00'),
+            'y': LaunchConfiguration('y_pose', default='-0.50'),
+            'z': LaunchConfiguration('z_pose', default='0.01'),
+            'R': LaunchConfiguration('roll', default='0.00'),
+            'P': LaunchConfiguration('pitch', default='0.00'),
+            'Y': LaunchConfiguration('yaw', default='0.00')}
+
+    # Declare the launch arguments
+    declare_namespace_cmd = DeclareLaunchArgument(
+        'namespace',
+        default_value='',
+        description='Top-level namespace')
+
+    declare_use_simulator_cmd = DeclareLaunchArgument(
+        'use_simulator',
+        default_value='True',
+        description='Whether to start the simulator')
+
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use simulation (Gazebo) clock if true',
     )
 
-    world_arg = DeclareLaunchArgument(
-        'world', default_value='world_test.sdf',
-        description='Name of the Gazebo world file to load'
-    )
+    declare_robot_name_cmd = DeclareLaunchArgument(
+        'robot_name',
+        default_value='polebot_amr',
+        description='name of the robot')
 
-    model_arg = DeclareLaunchArgument(
-        'model', default_value='main_robot.xacro',
-        description='Name of the URDF description to load'
-    )
+    # declare_robot_sdf_cmd = DeclareLaunchArgument(
+    #     'robot_sdf',
+    #     default_value=os.path.join(desc_dir, 'urdf', 'standard', 'turtlebot4.urdf.xacro'),
+    #     description='Full path to robot sdf file to spawn the robot in gazebo')
 
-    # Define the path to your URDF or Xacro file
-    urdf_file_path = PathJoinSubstitution([
-        pkg_urdf_path,  # Replace with your package name
-        "urdf",
-        "robot",
-        LaunchConfiguration('model')  # Replace with your URDF or Xacro file
-    ])
-
-    world_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_gazebo_path, 'launch', 'world.launch.py'),
-        ),
-        launch_arguments={
-        'world': LaunchConfiguration('world'),
-        }.items()
-    )
-
-    # Launch rviz
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        arguments=['-d', os.path.join(pkg_urdf_path, 'rviz', 'polebot_amr.rviz')],
-        condition=IfCondition(LaunchConfiguration('rviz')),
-        parameters=[
-            {'use_sim_time': True},
-        ]
-    )
-
-    # Spawn the URDF model using the `/world/<world_name>/create` service
-    spawn_urdf_node = Node(
-        package="ros_gz_sim",
-        executable="create",
-        arguments=[
-            "-name", "polebot_amr",
-            "-topic", "robot_description",
-            "-x", "0.0", "-y", "0.0", "-z", "0.0", "-Y", "0.0"  # Initial spawn position
-        ],
-        output="screen",
-        parameters=[
-            {'use_sim_time': True},
-        ]
-    )
-
-    robot_state_publisher_node = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        output='screen',
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='bridge_ros_gz',
         parameters=[
             {
-                'robot_description': Command([
-                    'xacro',
-                    ' ', urdf_file_path,
-                    ' package_path:=', pkg_urdf_path
-                ]),
-                'use_sim_time': True,
+                'config_file': os.path.join(
+                    sim_dir, 'configs', 'polebot_amr_bridge.yaml'
+                ),
+                'use_sim_time': use_sim_time,
             }
         ],
-        remappings=[
-            ('/tf', 'tf'),
-            ('/tf_static', 'tf_static')
-        ]
+        output='screen',
     )
 
-    joint_state_publisher_node = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher',
-        parameters=[{'use_gui': True}],
-        output='screen'
-    )   
+    camera_bridge_image = Node(
+        package='ros_gz_image',
+        executable='image_bridge',
+        name='bridge_gz_ros_camera_image',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+        }],
+        arguments=['/rgbd_camera/image'])
 
-    # Node to bridge messages like /cmd_vel and /odom
-    gz_bridge_node = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
+    camera_bridge_depth = Node(
+        package='ros_gz_image',
+        executable='image_bridge',
+        name='bridge_gz_ros_camera_depth',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+        }],
+        arguments=['/rgbd_camera/depth_image'])
+
+    spawn_model = Node(
+        condition=IfCondition(use_simulator),
+        package='ros_gz_sim',
+        executable='create',
+        output='screen',
         arguments=[
-            "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist",
-            "/odom@nav_msgs/msg/Odometry@gz.msgs.Odometry",
-            "/joint_states@sensor_msgs/msg/JointState@gz.msgs.Model",
-            "/tf@tf2_msgs/msg/TFMessage@gz.msgs.Pose_V",
-            "/camera_right/image@sensor_msgs/msg/Image@gz.msgs.Image",
-            "/camera_right/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-            "/camera_left/image@sensor_msgs/msg/Image@gz.msgs.Image",
-            "/camera_left/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
-            "/laser_scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-            "/uls_frontleft/range@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-            "/uls_frontright/range@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-            "/uls_backleft/range@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-            "/uls_backright/range@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan",
-            #"/laser_scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked",
-        ],
-        output="screen",
-        parameters=[
-            {'use_sim_time': True},
-        ]
+            '-entity', robot_name,
+            '-topic', 'robot_description',
+            # '-file', Command(['xacro', ' ', robot_sdf]), # TODO SDF file is unhappy, not sure why
+            '-robot_namespace', namespace,
+            '-x', pose['x'], '-y', pose['y'], '-z', pose['z'],
+            '-R', pose['R'], '-P', pose['P'], '-Y', pose['Y']],
+        parameters=[{'use_sim_time': use_sim_time}]
     )
 
-    # joint_state_publisher_gui_node = Node(
-    #     package='joint_state_publisher_gui',
-    #     executable='joint_state_publisher_gui',
-    # )
+    set_env_vars_resources = AppendEnvironmentVariable(
+            'GZ_SIM_RESOURCE_PATH',
+            str(Path(os.path.join(desc_dir)).parent.resolve()))
 
+    # Create the launch description and populate
+    ld = LaunchDescription()
+    ld.add_action(declare_namespace_cmd)
+    ld.add_action(declare_robot_name_cmd)
+    # ld.add_action(declare_robot_sdf_cmd)
+    ld.add_action(declare_use_simulator_cmd)
+    ld.add_action(declare_use_sim_time_cmd)
 
-    launchDescriptionObject = LaunchDescription()
+    ld.add_action(set_env_vars_resources)
 
-    launchDescriptionObject.add_action(rviz_launch_arg)
-    launchDescriptionObject.add_action(world_arg)
-    launchDescriptionObject.add_action(model_arg)
-    launchDescriptionObject.add_action(world_launch)
-    launchDescriptionObject.add_action(rviz_node)
-    launchDescriptionObject.add_action(spawn_urdf_node)
-    launchDescriptionObject.add_action(robot_state_publisher_node)
-    launchDescriptionObject.add_action(gz_bridge_node)
-    launchDescriptionObject.add_action(joint_state_publisher_node)
-    #launchDescriptionObject.add_action(joint_state_publisher_gui_node)
+    ld.add_action(bridge)
+    ld.add_action(camera_bridge_image)
+    ld.add_action(camera_bridge_depth)
 
-    return launchDescriptionObject
+    ld.add_action(spawn_model)
+    return ld

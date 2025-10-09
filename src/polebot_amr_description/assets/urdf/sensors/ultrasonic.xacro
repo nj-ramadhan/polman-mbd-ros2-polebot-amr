@@ -16,7 +16,7 @@
     enable_collision:=false">
 
     <!-- Définition du lien du capteur -->
-    <link name="${name}">
+    <link name="${name}_link">
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <mass value="0.0045"/>
@@ -46,11 +46,11 @@
     <!-- Joint fixe entre le capteur et le parent -->
     <joint name="${name}_joint" type="fixed">
       <parent link="base_link"/>
-      <child link="${name}"/>
+      <child link="${name}_link"/>
       <origin xyz="${joint_xyz}" rpy="${joint_rpy}"/>
     </joint>
 
-    <gazebo reference="${name}">
+    <gazebo reference="${name}_link">
       <sensor name="${name}_sensor" type="gpu_lidar">
         <topic>${name}/range</topic>
         <update_rate>${update_rate}</update_rate>
@@ -71,7 +71,7 @@
             <resolution>${range_resolution}</resolution>
           </range>
         </lidar>
-        <gz_frame_id>${name}</gz_frame_id>
+        <gz_frame_id>${name}_link</gz_frame_id>
       </sensor>
     </gazebo>
   </xacro:macro>
