@@ -28,7 +28,7 @@ def generate_launch_description():
     package_name_localization = 'polebot_amr_localization'
  
     # Launch and config file paths
-    gazebo_launch_file_path = 'launch/polebot_amr.gazebo.launch.py'
+    gazebo_launch_file_path = 'launch/polebot_amr_gazebo.launch.py'
     ekf_launch_file_path = 'launch/ekf_gazebo.launch.py'
     ekf_config_file_path = 'config/ekf.yaml'
     rviz_config_file_path = 'rviz/polebot_amr_gazebo_sim.rviz'
