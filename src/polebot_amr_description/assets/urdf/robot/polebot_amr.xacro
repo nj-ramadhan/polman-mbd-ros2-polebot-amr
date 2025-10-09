@@ -41,7 +41,7 @@
     name="camera" 
     parent_link="base_link"
     joint_xyz="0.470 0.0 0.06"
-    joint_rpy="0 0 -1.57"
+    joint_rpy="0 -0.09 0"
     mesh_xyz="0 0 0"
     mesh_rpy="0 0 0"
     />

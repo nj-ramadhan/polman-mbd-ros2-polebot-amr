@@ -7,7 +7,7 @@
     joint_xyz joint_rpy 
     mesh_xyz mesh_rpy ">
 
-    <link name="${name}">
+    <link name="${name}_link">
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <mass value="0.1"/>
@@ -35,17 +35,17 @@
     <joint name="${name}_joint" type="fixed">
       <origin xyz="${joint_xyz}" rpy="${joint_rpy}"/>
       <parent link="${parent_link}"/>
-      <child link="${name}"/>
+      <child link="${name}_link"/>
     </joint>
 
     <joint type="fixed" name="${name}_optical_joint">
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <child link="${name}_optical"/>
-      <parent link="${name}"/>
+      <child link="${name}_link_optical"/>
+      <parent link="${name}_link"/>
     </joint>
 
     <!-- 6 - Camera Link Optical -->
-    <link name="${name}_optical">
+    <link name="${name}_link_optical">
     </link>
 
     <!-- 7 - Camera Gazebo Plugin -->
@@ -70,7 +70,7 @@
             <mean>0.0</mean>
             <stddev>0.007</stddev>
           </noise>
-          <optical_frame_id>${name}_optical</optical_frame_id>
+          <optical_frame_id>${name}_link_optical</optical_frame_id>
           <camera_info_topic>${name}/camera_info</camera_info_topic>
         </camera>
         <always_on>1</always_on>
