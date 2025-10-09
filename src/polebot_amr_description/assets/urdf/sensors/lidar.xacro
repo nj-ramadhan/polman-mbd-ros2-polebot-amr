@@ -10,10 +10,10 @@
     ray_count:=270
     min_angle:='-3.1456'
     max_angle:='3.1456'
-    min_range:='0.2'
-    max_range:='30.0'
+    min_range:='0.05'
+    max_range:='25.0'
     range_resolution:='0.013'
-    topic_name:='laser_scan'
+    topic_name:='scan'
     always_on:=true
     visualize:=false
     enable_collision:=false">

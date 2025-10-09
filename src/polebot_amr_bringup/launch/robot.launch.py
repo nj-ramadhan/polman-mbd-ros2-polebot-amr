@@ -19,7 +19,7 @@ def generate_launch_description():
     orbbec_camera_launch_path = os.path.join(
         get_package_share_directory('orbbec_camera'),
         'launch',
-        'astra.launch.py'
+        'astra2.launch.py'
     )
     
     # Include Orbbec camera launch file with arguments

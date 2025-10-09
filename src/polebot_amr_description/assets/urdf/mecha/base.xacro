@@ -8,7 +8,7 @@
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0.180" rpy="0 0 0"/>
   </joint>
 
   <link name="chassis">
@@ -37,7 +37,7 @@
   <joint name="base_joint" type="fixed">
     <parent link="base_link"/>
     <child link="chassis"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 -0.180" rpy="0 0 0"/>
   </joint>
   
   <link name="left_wheel">
@@ -74,7 +74,7 @@
   <joint name="left_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="left_wheel"/>
-    <origin xyz="0.083 0.32 0.078" rpy="0 0 0"/>
+    <origin xyz="0.083 0.32 -0.102" rpy="0 0 0"/>
     <axis xyz="0 -1 0">
       <dynamics damping="1.0" friction="0.5"/>
     </axis>
@@ -114,7 +114,7 @@
   <joint name="right_wheel_joint" type="continuous">
     <parent link="base_link"/>
     <child link="right_wheel"/>
-    <origin xyz="0.083 -0.32 0.078" rpy="0 0 0"/>
+    <origin xyz="0.083 -0.32 -0.102" rpy="0 0 0"/>
     <axis xyz="0 -1 0">
         <dynamics damping="1.0" friction="0.5"/>
     </axis>
@@ -144,7 +144,7 @@
   <joint name="front_left_caster_joint" type="continuous">
     <parent link="base_link"/>
     <child link="front_left_caster"/>
-    <origin xyz="0.417 0.32 0.06" rpy="0 0 0"/>
+    <origin xyz="0.417 0.32 -0.120" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
   </joint>
 
@@ -172,7 +172,7 @@
   <joint name="front_right_caster_joint" type="continuous">
     <parent link="base_link"/>
     <child link="front_right_caster"/>
-    <origin xyz="0.417 -0.32 0.06" rpy="0 0 0"/>
+    <origin xyz="0.417 -0.32 -0.120" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
   </joint>
 
@@ -200,7 +200,7 @@
   <joint name="rear_left_caster_joint" type="continuous">
     <parent link="base_link"/>
     <child link="rear_left_caster"/>
-    <origin xyz="-0.33 0.32 0.06" rpy="0 0 0"/>
+    <origin xyz="-0.33 0.32 -0.120" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
   </joint>
 
@@ -228,7 +228,7 @@
   <joint name="rear_right_caster_joint" type="continuous">
     <parent link="base_link"/>
     <child link="rear_right_caster"/>
-    <origin xyz="-0.33 -0.32 0.06" rpy="0 0 0"/>
+    <origin xyz="-0.33 -0.32 -0.120" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
   </joint>
 

@@ -18,7 +18,6 @@ def generate_launch_description():
     )
     # Chemins
     description_pkg_path = FindPackageShare('polebot_amr_description').find('polebot_amr_description')
-    print(description_pkg_path) 
     polebot_amr_slam_path = get_package_share_directory('polebot_amr_slam')
     xacro_file = os.path.join(description_pkg_path, 'urdf', 'robot', 'polebot_amr.xacro')
     rviz_config = os.path.join(polebot_amr_slam_path, 'rviz', 'slam.rviz')
@@ -57,12 +56,6 @@ def generate_launch_description():
         output="screen"
     )
 
-    lidar_tf_node = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'lidar']
-    )
-
     autonics_lsc_lidar_node = Node(
         package='lsc_ros2_driver',
         executable='autonics_lsc_lidar',
@@ -71,25 +64,17 @@ def generate_launch_description():
         parameters=[{
             'addr': '192.168.0.1',
             'port': 8000,
-            'frame_id': 'lidar',
+            'frame_id': 'lidar_link',
             'range_min': 0.05,
             'range_max': 25.0,
             'intensities': True
         }]
     )
 
-    camera_tf_node = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        arguments=['0', '0', '0', '1.57', '0', '0', 'base_link', 'camera_link'],
-        name='camera_link_to_optical_frame'
-    )
-
-
     orbbec_camera_launch_path = os.path.join(
         get_package_share_directory('orbbec_camera'),
         'launch',
-        'astra.launch.py'
+        'astra2.launch.py'
     )
 
     orbbec_camera_launch = IncludeLaunchDescription(
@@ -150,10 +135,8 @@ def generate_launch_description():
         robot_state_node,
         joint_state_node,
 
-        lidar_tf_node,
         autonics_lsc_lidar_node,
 
-        camera_tf_node,
         orbbec_camera_launch,
 
         slam_toolbox_launch,
