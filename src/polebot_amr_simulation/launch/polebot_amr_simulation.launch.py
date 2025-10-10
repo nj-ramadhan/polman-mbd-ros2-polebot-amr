@@ -97,7 +97,7 @@ def generate_launch_description():
     )
 
     declare_robot_name_cmd = DeclareLaunchArgument(
-        'robot_name', default_value='nav2_polebot_amr', description='name of the robot'
+        'robot_name', default_value='polebot_amr', description='name of the robot'
     )
 
     declare_robot_sdf_cmd = DeclareLaunchArgument(

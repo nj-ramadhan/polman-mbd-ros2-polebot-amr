@@ -22,7 +22,7 @@ def generate_launch_description():
     use_simulator = LaunchConfiguration('use_simulator')
     robot_name = LaunchConfiguration('robot_name')
     # robot_sdf = LaunchConfiguration('robot_sdf')
-    pose = {'x': LaunchConfiguration('x_pose', default='-8.00'),
+    pose = {'x': LaunchConfiguration('x_pose', default='10.00'),
             'y': LaunchConfiguration('y_pose', default='-0.50'),
             'z': LaunchConfiguration('z_pose', default='0.01'),
             'R': LaunchConfiguration('roll', default='0.00'),
@@ -79,7 +79,7 @@ def generate_launch_description():
         parameters=[{
             'use_sim_time': use_sim_time,
         }],
-        arguments=['/rgbd_camera/image'])
+        arguments=['/camera/image'])
 
     camera_bridge_depth = Node(
         package='ros_gz_image',
@@ -89,7 +89,7 @@ def generate_launch_description():
         parameters=[{
             'use_sim_time': use_sim_time,
         }],
-        arguments=['/rgbd_camera/depth_image'])
+        arguments=['/camera/depth_image'])
 
     spawn_model = Node(
         condition=IfCondition(use_simulator),

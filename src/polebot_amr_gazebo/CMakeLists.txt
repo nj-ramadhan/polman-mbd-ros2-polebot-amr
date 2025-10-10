@@ -7,10 +7,17 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(controller_manager REQUIRED)
+find_package(gz_ros2_control REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(urdf REQUIRED)
+find_package(ros_gz REQUIRED)
+find_package(ros_gz_bridge REQUIRED)
+find_package(ros_gz_image REQUIRED)
+find_package(ros_gz_sim REQUIRED)
+find_package(ros2_control REQUIRED)
+find_package(ros2_controllers REQUIRED)
+find_package(trajectory_msgs REQUIRED)
 find_package(xacro REQUIRED)
-find_package(robot_state_publisher REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -36,6 +43,21 @@ include_directories(
 install(
   DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}/
+)
+
+install (
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install (
+  DIRECTORY control
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install (
+  DIRECTORY rviz
+  DESTINATION share/${PROJECT_NAME}
 )
 
 install(DIRECTORY

@@ -8,14 +8,18 @@ from ament_index_python.packages import get_package_share_directory
 import xacro
 
 def generate_launch_description():
-    pkg_description = FindPackageShare('polebot_amr_gazebo').find('polebot_amr_gazebo')
-    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
+    pkg_description = FindPackageShare('polebot_amr_description').find('polebot_amr_description')
+    pkg_gazebo_ros = get_package_share_directory('ros_gz')
 
     # Process URDF
     xacro_file = os.path.join(pkg_description, 'urdf', 'robot', 'polebot_amr.xacro')
     robot_description_config = xacro.process_file(
         xacro_file,
-        mappings={'package_path': pkg_description}
+        mappings={
+            'package_path': pkg_description,
+            'robot_name': 'polebot_amr',
+            'use_gazebo': 'true'
+        }
     ).toxml()
 
     # Robot state publisher
@@ -29,18 +33,18 @@ def generate_launch_description():
     # Start Gazebo
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_gazebo_ros, 'launch', 'gazebo.launch.py')
+            os.path.join(get_package_share_directory(pkg_gazebo_ros), 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={'verbose': 'false'}.items(),
     )
 
     # Spawn robot
     spawn_entity = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
+        package='ros_gz_sim',
+        executable='create',
         arguments=[
             '-entity', 'polebot_amr',
-            '-topic', '/robot_description',
+            '-topic', 'robot_description',
             '-x', '0', '-y', '0', '-z', '0.1'
         ],
         output='screen'
