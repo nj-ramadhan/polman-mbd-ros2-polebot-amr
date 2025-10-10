@@ -22,7 +22,7 @@ def generate_launch_description():
     use_simulator = LaunchConfiguration('use_simulator')
     robot_name = LaunchConfiguration('robot_name')
     # robot_sdf = LaunchConfiguration('robot_sdf')
-    pose = {'x': LaunchConfiguration('x_pose', default='10.00'),
+    pose = {'x': LaunchConfiguration('x_pose', default='1.00'),
             'y': LaunchConfiguration('y_pose', default='-0.50'),
             'z': LaunchConfiguration('z_pose', default='0.01'),
             'R': LaunchConfiguration('roll', default='0.00'),
@@ -56,41 +56,6 @@ def generate_launch_description():
     #     default_value=os.path.join(desc_dir, 'urdf', 'standard', 'turtlebot4.urdf.xacro'),
     #     description='Full path to robot sdf file to spawn the robot in gazebo')
 
-    bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        name='bridge_ros_gz',
-        parameters=[
-            {
-                'config_file': os.path.join(
-                    sim_dir, 'configs', 'polebot_amr_bridge.yaml'
-                ),
-                'use_sim_time': use_sim_time,
-            }
-        ],
-        output='screen',
-    )
-
-    camera_bridge_image = Node(
-        package='ros_gz_image',
-        executable='image_bridge',
-        name='bridge_gz_ros_camera_image',
-        output='screen',
-        parameters=[{
-            'use_sim_time': use_sim_time,
-        }],
-        arguments=['/camera/image'])
-
-    camera_bridge_depth = Node(
-        package='ros_gz_image',
-        executable='image_bridge',
-        name='bridge_gz_ros_camera_depth',
-        output='screen',
-        parameters=[{
-            'use_sim_time': use_sim_time,
-        }],
-        arguments=['/camera/depth_image'])
-
     spawn_model = Node(
         condition=IfCondition(use_simulator),
         package='ros_gz_sim',
@@ -119,10 +84,6 @@ def generate_launch_description():
     ld.add_action(declare_use_sim_time_cmd)
 
     ld.add_action(set_env_vars_resources)
-
-    ld.add_action(bridge)
-    ld.add_action(camera_bridge_image)
-    ld.add_action(camera_bridge_depth)
 
     ld.add_action(spawn_model)
     return ld

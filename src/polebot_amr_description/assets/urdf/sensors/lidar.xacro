@@ -8,81 +8,59 @@
     mesh_xyz mesh_rpy
     update_rate:=10
     ray_count:=270
-    min_angle:='-3.1456'
-    max_angle:='3.1456'
+    min_angle:='-2.3592'
+    max_angle:='2.3592'
     min_range:='0.05'
     max_range:='25.0'
     range_resolution:='0.013'
     topic_name:='scan'
     always_on:=true
-    visualize:=false
-    enable_collision:=false">
+    visualize:=true">
 
+    <!-- Link -->
     <link name="${name}_link">
-      <inertial>
-        <origin xyz="0 0 0.00977" rpy="0 0 0"/>
-        <mass value="0.02915"/>
-        <inertia ixx="3.79e-06" ixy="0" ixz="0" iyy="3.79e-06" iyz="0" izz="5.71e-06"/>
-      </inertial>
-
-      <!-- Visual -->
-      <visual>
-        <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
-        <geometry>
-          <mesh filename="package://polebot_amr_description/meshes/lidar.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-        <material name="${name}_material">
-          <color rgba="0.2 0.2 0.2 1.0"/>
-        </material>
-      </visual>
-
-      <!-- Collision (identique au visual) -->
-      <collision>
-        <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
-        <geometry>
-          <mesh filename="package://polebot_amr_description/meshes/lidar.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </collision>
+      <inertial> ... </inertial>
+      <visual> ... </visual>
+      <collision> ... </collision>
+      <!-- NO <gazebo> inside here -->
     </link>
 
-    <!-- Joint fixe -->
+    <!-- Joint -->
     <joint name="${name}_joint" type="fixed">
-      <origin xyz="${joint_xyz}" rpy="${joint_rpy}"/>
       <parent link="${parent_link}"/>
       <child link="${name}_link"/>
-      <axis xyz="0 0 1"/>
-      <limit effort="10" velocity="10"/>
+      <origin xyz="${joint_xyz}" rpy="${joint_rpy}"/>
     </joint>
 
+    <!-- Gazebo sensor (outside link!) -->
     <gazebo reference="${name}_link">
-      <sensor name="lidar" type="gpu_lidar">
-        <topic>${topic_name}</topic>
-        <update_rate>${update_rate}</update_rate>
-        <always_on>${always_on}</always_on>
-        <visualize>${visualize}</visualize>
+      <sensor name="${name}" type="gpu_lidar">
+        <topic>${name}/scan</topic>
+        <update_rate>10</update_rate>
         <lidar>
           <scan>
             <horizontal>
-              <samples>${ray_count}</samples>
-              <resolution>1</resolution>
-              <min_angle>${min_angle}</min_angle>
-              <max_angle>${max_angle}</max_angle>
+              <samples>270</samples>
+              <min_angle>-3.14</min_angle>
+              <max_angle>3.14</max_angle>
             </horizontal>
-            <!-- 2D Lidar -->
             <vertical>
               <samples>1</samples>
-              <resolution>1</resolution>
               <min_angle>0</min_angle>
               <max_angle>0</max_angle>
             </vertical>
           </scan>
           <range>
-            <min>${min_range}</min>
-            <max>${max_range}</max>
-            <resolution>${range_resolution}</resolution>
+            <min>0.05</min>
+            <max>25.0</max>
           </range>
         </lidar>
-        <gz_frame_id>${name}_link</gz_frame_id>
+        <plugin filename="libros_gz_sensor_plugin.so" name="ros_gz::SensorPlugin">
+          <ros>
+            <frame_id>${name}_link</frame_id>
+            <remapping>${name}/scan:=/scan</remapping>
+          </ros>
+        </plugin>
       </sensor>
     </gazebo>
   </xacro:macro>

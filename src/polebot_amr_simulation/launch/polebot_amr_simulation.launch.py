@@ -17,7 +17,7 @@ from launch.event_handlers import OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command
 from launch.substitutions import LaunchConfiguration, PythonExpression
-
+from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.actions import Node
 
 
@@ -39,7 +39,7 @@ def generate_launch_description():
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='-8.00'),
+        'x': LaunchConfiguration('x_pose', default='1.00'),
         'y': LaunchConfiguration('y_pose', default='0.00'),
         'z': LaunchConfiguration('z_pose', default='0.01'),
         'R': LaunchConfiguration('roll', default='0.00'),
@@ -51,10 +51,10 @@ def generate_launch_description():
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
-    # https://github.com/ros/geometry2/issues/32
-    # https://github.com/ros/robot_state_publisher/pull/30
+    # https://github.com/ros/geometry2/issues/32  
+    # https://github.com/ros/robot_state_publisher/pull/30  
     # TODO(orduno) Substitute with `PushNodeRemapping`
-    #              https://github.com/ros2/launch_ros/issues/56
+    #              https://github.com/ros2/launch_ros/issues/56  
     remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
 
     # Declare the launch arguments
@@ -113,11 +113,14 @@ def generate_launch_description():
         name='robot_state_publisher',
         namespace=namespace,
         output='screen',
-        parameters=[
-            {'use_sim_time': use_sim_time,
-             'robot_description': Command(['xacro', ' ', robot_sdf])}
-        ],
         remappings=remappings,
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'robot_description': ParameterValue(
+                Command(['xacro', ' ', robot_sdf]),
+                value_type=str
+            )
+        }],        
     )
 
     joint_state_publisher_cmd = Node(
@@ -178,32 +181,38 @@ def generate_launch_description():
     # running in headless mode. But currently, the Gazebo command line doesn't
     # take SDF strings for worlds, so the output of xacro needs to be saved into
     # a temporary file and passed to Gazebo.
-    world_sdf = tempfile.mktemp(prefix='nav2_', suffix='.sdf')
-    world_sdf_xacro = ExecuteProcess(
-        cmd=['xacro', '-o', world_sdf, ['headless:=', headless], world])
-    gazebo_server = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch',
-                         'gz_sim.launch.py')),
-        launch_arguments={'gz_args': ['-r -s ', world_sdf]}.items(),
-        condition=IfCondition(use_simulator))
+    # world_sdf = tempfile.mktemp(prefix='nav2_', suffix='.sdf')
+    # world_sdf_xacro = ExecuteProcess(
+    #     cmd=['xacro', '-o', world_sdf, ['headless:=', headless], world])
 
-    remove_temp_sdf_file = RegisterEventHandler(event_handler=OnShutdown(
-        on_shutdown=[
-            OpaqueFunction(function=lambda _: os.remove(world_sdf))
-        ]))
+    declare_world_cmd = DeclareLaunchArgument(
+        'world',
+        default_value=os.path.join(sim_dir, 'worlds', 'depot.sdf'),  # ← already SDF
+        description='Full path to world model file to load',
+    )
 
-    set_env_vars_resources = AppendEnvironmentVariable(
-            'GZ_SIM_RESOURCE_PATH',
-            os.path.join(sim_dir, 'worlds'))
-    gazebo_client = IncludeLaunchDescription(
+    # Set Gazebo resource path
+    set_gz_env = AppendEnvironmentVariable(
+        'GZ_SIM_RESOURCE_PATH',
+        os.path.join(sim_dir, 'worlds')
+    )
+
+    # Gazebo Server (headless)
+    gz_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('ros_gz_sim'),
-                         'launch',
-                         'gz_sim.launch.py')
+            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
         ),
-        condition=IfCondition(PythonExpression([use_simulator, ' and not ', headless])),
-        launch_arguments={'gz_args': ['-v4 -g ']}.items(),
+        launch_arguments={'gz_args': ['-r -s ', world], 'use_sim_time': use_sim_time}.items(),
+        condition=IfCondition(use_simulator)
+    )
+
+    # Gazebo Client (GUI) — only if not headless
+    gz_client = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
+        ),
+        launch_arguments={'gz_args': ['-g -v4']}.items(),
+        condition=IfCondition(PythonExpression([use_simulator, ' and not ', headless]))
     )
 
     gz_robot = IncludeLaunchDescription(
@@ -236,12 +245,12 @@ def generate_launch_description():
     ld.add_action(declare_robot_name_cmd)
     ld.add_action(declare_robot_sdf_cmd)
 
-    ld.add_action(set_env_vars_resources)
-    ld.add_action(world_sdf_xacro)
-    ld.add_action(remove_temp_sdf_file)
+    ld.add_action(set_gz_env)
+    # ld.add_action(world_sdf_xacro)
+    # ld.add_action(remove_temp_sdf_file)
     ld.add_action(gz_robot)
-    ld.add_action(gazebo_server)
-    ld.add_action(gazebo_client)
+    ld.add_action(gz_server)
+    ld.add_action(gz_client)
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(start_robot_state_publisher_cmd)
