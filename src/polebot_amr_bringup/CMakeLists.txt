@@ -40,10 +40,4 @@ install(DIRECTORY params
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(PROGRAMS
-  polebot_amr_bringup/fake_odom_publisher.py
-  polebot_amr_bringup/ultrasonic_broadcaster.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 ament_package()

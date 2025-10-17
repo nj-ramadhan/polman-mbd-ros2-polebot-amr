@@ -224,7 +224,7 @@
         <always_on>true</always_on>
         <update_rate>100</update_rate>
         <visualize>true</visualize>
-        <topic>demo/imu</topic>
+        <topic>/imu</topic>
         <gz_frame_id>imu_link</gz_frame_id>
         <imu>
           <angular_velocity>
@@ -296,10 +296,10 @@
       <max_linear_acceleration>0.1</max_linear_acceleration>
 
       <!-- input -->
-      <topic>/demo/cmd_vel</topic>
+      <topic>/cmd_vel</topic>
 
       <!-- output -->
-      <odom_topic>/demo/odom</odom_topic>
+      <odom_topic>/odom</odom_topic>
       <tf_topic>/tf</tf_topic>
 
       <frame_id>odom</frame_id>
@@ -315,7 +315,7 @@
     <joint name="lidar_joint" type="fixed">
       <parent>base_link</parent>
       <child>lidar_link</child>
-      <pose relative_to="base_link">0.50 0.0 0.182 0 0 0</pose>
+      <pose relative_to="base_link">0.52 0.0 0.182 0 0 0</pose>
     </joint>
 
     <link name='lidar_link'>
@@ -351,8 +351,8 @@
             <horizontal>
               <samples>270</samples>
               <resolution>1.000000</resolution>
-              <min_angle>-2.3592</min_angle>
-              <max_angle>2.3592</max_angle>
+              <min_angle>-2.093</min_angle>
+              <max_angle>2.093</max_angle>
             </horizontal>
           </scan>
           <range>

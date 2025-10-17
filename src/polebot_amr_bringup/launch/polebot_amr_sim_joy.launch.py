@@ -1,55 +1,73 @@
-import os
+# launch/polebot_amr_bringup.launch.py
 from launch import LaunchDescription
-from launch_ros.actions import Node
-from ament_index_python.packages import get_package_share_directory
-from launch.substitutions import Command
-from launch.actions import IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
-from launch.actions import DeclareLaunchArgument
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.actions import SetParameter
+from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
-    use_sim_time = LaunchConfiguration('use_sim_time')
-    joy_params = os.path.join(get_package_share_directory('polebot_amr_bringup'),'params','joystick_params.yaml')
+    # Package directories
+    pkg_polebot_description = get_package_share_directory('polebot_amr_description')
+    pkg_polebot_bringup = get_package_share_directory('polebot_amr_bringup')
+    pkg_slam_toolbox = get_package_share_directory('slam_toolbox')
+    pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
 
-    fake_odom_node = Node(
-        package='polebot_amr_bringup',
-        executable='fake_odom_publisher.py',
-        name='fake_odom_publisher',
-        output='screen'
-    )
+    # Config file path
+    nav2_params_file = PathJoinSubstitution([
+        pkg_polebot_description, 'config', 'polebot_amr_nav2_params.yaml'
+    ])
+
+    joy_params_file = PathJoinSubstitution([
+        pkg_polebot_bringup, 'params', 'joystick_params.yaml'
+    ])
 
     joy_node = Node(
-            package='joy',
-            executable='joy_node',
-            parameters=[joy_params, {'use_sim_time': use_sim_time}],
-         )
+        package='joy',
+        executable='joy_node',
+        parameters=[
+            joy_params_file,
+        ],
+    )
 
     teleop_node = Node(
-            package='teleop_twist_joy',
-            executable='teleop_node',
-            name='teleop_node',
-            parameters=[joy_params, {'use_sim_time': use_sim_time}],
-         )
-    
-    slam_toolbox_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('polebot_amr_slam'),
-                'launch',
-                'polebot_slam.launch.py'
-            )
-        )
+        package='teleop_twist_joy',
+        executable='teleop_node',
+        name='teleop_node',
+        parameters=[
+            joy_params_file,
+        ],
     )
     
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='false',
-            description='Use sim time if true'),
+        # Enable use_sim_time globally
+        SetParameter(name='use_sim_time', value=True),
+
+        # 1. Robot simulation (Gazebo + RViz)
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution([pkg_polebot_description, 'launch', 'polebot_amr_display.launch.py'])
+            )
+        ),
+
+        # 2. SLAM Toolbox
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution([pkg_slam_toolbox, 'launch', 'online_async_launch.py'])
+            ),
+            launch_arguments={'use_sim_time': 'true'}.items()
+        ),
+
+        # 3. Nav2
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution([pkg_nav2_bringup, 'launch', 'navigation_launch.py'])
+            ),
+            launch_arguments={'params_file': nav2_params_file}.items()
+        ),
+
+        # 4. Teleop (with stamped Twist
         joy_node,
         teleop_node,
-        slam_toolbox_launch,
-        fake_odom_node,
-
     ])

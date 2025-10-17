@@ -1,3 +1,18 @@
+# Copyright (C) 2023 Open Source Robotics Foundation
+# Copyright (C) 2024 Open Navigation LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 from pathlib import Path
 
@@ -7,7 +22,6 @@ from launch import LaunchDescription
 from launch.actions import AppendEnvironmentVariable
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
-from launch.substitutions import Command
 from launch.substitutions import LaunchConfiguration
 
 from launch_ros.actions import Node
@@ -56,6 +70,21 @@ def generate_launch_description():
     #     default_value=os.path.join(desc_dir, 'urdf', 'standard', 'turtlebot4.urdf.xacro'),
     #     description='Full path to robot sdf file to spawn the robot in gazebo')
 
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='bridge_ros_gz',
+        parameters=[
+            {
+                'config_file': os.path.join(
+                    sim_dir, 'configs', 'polebot_amr_bridge.yaml'
+                ),
+                'use_sim_time': use_sim_time,
+            }
+        ],
+        output='screen',
+    )
+
     spawn_model = Node(
         condition=IfCondition(use_simulator),
         package='ros_gz_sim',
@@ -85,5 +114,6 @@ def generate_launch_description():
 
     ld.add_action(set_env_vars_resources)
 
+    ld.add_action(bridge)
     ld.add_action(spawn_model)
     return ld

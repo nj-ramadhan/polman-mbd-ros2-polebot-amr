@@ -23,10 +23,9 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
-    sim_dir = get_package_share_directory('polebot_amr_simulation')
-    desc_dir = get_package_share_directory('polebot_amr_description')
-    ctrl_dir = get_package_share_directory('polebot_amr_controller')
-    launch_dir = os.path.join(sim_dir, 'launch')
+    polebot_sim_dir = get_package_share_directory('polebot_amr_simulation')
+    polebot_desc_dir = get_package_share_directory('polebot_amr_description')
+    launch_dir = os.path.join(polebot_sim_dir, 'launch')
 
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
@@ -70,7 +69,7 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         'rviz_config_file',
-        default_value=os.path.join(desc_dir, 'rviz', 'polebot_amr.rviz'),
+        default_value=os.path.join(polebot_desc_dir, 'rviz', 'polebot_amr.rviz'),
         description='Full path to the RVIZ config file to use',
     )
 
@@ -92,7 +91,7 @@ def generate_launch_description():
 
     declare_world_cmd = DeclareLaunchArgument(
         'world',
-        default_value=os.path.join(sim_dir, 'worlds', 'depot.sdf'),
+        default_value=os.path.join(polebot_sim_dir, 'worlds', 'depot.sdf'),
         description='Full path to world model file to load',
     )
 
@@ -102,7 +101,7 @@ def generate_launch_description():
 
     declare_robot_sdf_cmd = DeclareLaunchArgument(
         'robot_sdf',
-        default_value=os.path.join(desc_dir, 'urdf', 'robot', 'polebot_amr.xacro'),
+        default_value=os.path.join(polebot_desc_dir, 'src', 'description', 'polebot_amr_description.sdf'),
         description='Full path to robot sdf file to spawn the robot in gazebo',
     )
 
@@ -121,46 +120,6 @@ def generate_launch_description():
                 value_type=str
             )
         }],        
-    )
-
-    joint_state_publisher_cmd = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher',
-        output='screen',
-        parameters=[{'use_sim_time': use_sim_time}],
-        remappings=remappings,
-    )
-
-    controller_config = os.path.join(
-        get_package_share_directory('polebot_amr_controller'),
-        'configs',
-        'polebot_amr_controllers.yaml'
-    )
-
-    controller_manager_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        parameters=[
-            os.path.join(desc_dir, 'urdf', 'robot', 'polebot_amr.xacro'),
-            controller_config,
-            {'use_sim_time': use_sim_time}
-        ],
-        output='screen'
-    )
-
-    spawn_joint_state_broadcaster = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster'],
-        output='screen'
-    )
-
-    spawn_diff_drive_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['diff_drive_controller'],
-        output='screen'
     )
 
     rviz_cmd = Node(
@@ -185,34 +144,32 @@ def generate_launch_description():
     # world_sdf_xacro = ExecuteProcess(
     #     cmd=['xacro', '-o', world_sdf, ['headless:=', headless], world])
 
-    declare_world_cmd = DeclareLaunchArgument(
-        'world',
-        default_value=os.path.join(sim_dir, 'worlds', 'depot.sdf'),  # ← already SDF
-        description='Full path to world model file to load',
-    )
-
-    # Set Gazebo resource path
-    set_gz_env = AppendEnvironmentVariable(
-        'GZ_SIM_RESOURCE_PATH',
-        os.path.join(sim_dir, 'worlds')
-    )
-
-    # Gazebo Server (headless)
-    gz_server = IncludeLaunchDescription(
+    world_sdf = tempfile.mktemp(prefix='polebot', suffix='.sdf')
+    world_sdf_xacro = ExecuteProcess(
+        cmd=['xacro', '-o', world_sdf, ['headless:=', headless], world])
+    gazebo_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
-        ),
-        launch_arguments={'gz_args': ['-r -s ', world], 'use_sim_time': use_sim_time}.items(),
-        condition=IfCondition(use_simulator)
-    )
+            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch',
+                         'gz_sim.launch.py')),
+        launch_arguments={'gz_args': ['-r -s ', world_sdf]}.items(),
+        condition=IfCondition(use_simulator))
 
-    # Gazebo Client (GUI) — only if not headless
-    gz_client = IncludeLaunchDescription(
+    remove_temp_sdf_file = RegisterEventHandler(event_handler=OnShutdown(
+        on_shutdown=[
+            OpaqueFunction(function=lambda _: os.remove(world_sdf))
+        ]))
+
+    set_env_vars_resources = AppendEnvironmentVariable(
+            'GZ_SIM_RESOURCE_PATH',
+            os.path.join(polebot_sim_dir, 'worlds'))
+    gazebo_client = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
+            os.path.join(get_package_share_directory('ros_gz_sim'),
+                         'launch',
+                         'gz_sim.launch.py')
         ),
-        launch_arguments={'gz_args': ['-g -v4']}.items(),
-        condition=IfCondition(PythonExpression([use_simulator, ' and not ', headless]))
+        condition=IfCondition(PythonExpression([use_simulator, ' and not ', headless])),
+        launch_arguments={'gz_args': ['-v4 -g ']}.items(),
     )
 
     gz_robot = IncludeLaunchDescription(
@@ -245,21 +202,16 @@ def generate_launch_description():
     ld.add_action(declare_robot_name_cmd)
     ld.add_action(declare_robot_sdf_cmd)
 
-    ld.add_action(set_gz_env)
-    # ld.add_action(world_sdf_xacro)
-    # ld.add_action(remove_temp_sdf_file)
+    ld.add_action(set_env_vars_resources)
+    ld.add_action(world_sdf_xacro)
+    ld.add_action(remove_temp_sdf_file)
     ld.add_action(gz_robot)
-    ld.add_action(gz_server)
-    ld.add_action(gz_client)
+    ld.add_action(gazebo_server)
+    ld.add_action(gazebo_client)
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(start_robot_state_publisher_cmd)
-
-    ld.add_action(joint_state_publisher_cmd)
-    ld.add_action(controller_manager_node)
-    ld.add_action(spawn_joint_state_broadcaster)
-    ld.add_action(spawn_diff_drive_controller)
-
     ld.add_action(rviz_cmd)
+
 
     return ld

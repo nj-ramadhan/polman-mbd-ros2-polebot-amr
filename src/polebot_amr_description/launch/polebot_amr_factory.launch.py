@@ -15,7 +15,7 @@ def generate_launch_description():
     gz_spawn_model_launch_source = os.path.join(ros_gz_sim_share, "launch", "gz_spawn_model.launch.py")
     default_model_path = os.path.join(polebot_desc_dir, 'src', 'description', 'polebot_amr_description.sdf')
     default_rviz_config_path = os.path.join(polebot_desc_dir, 'rviz', 'polebot_amr_sim.rviz')
-    world_path = os.path.join(polebot_desc_dir, 'world', 'my_world.sdf')
+    world_path = os.path.join(polebot_desc_dir, 'world', 'factory.sdf')
     bridge_config_path = os.path.join(polebot_desc_dir, 'config', 'polebot_amr_bridge_config.yaml')
 
     robot_state_publisher_node = Node(
@@ -46,7 +46,7 @@ def generate_launch_description():
     spawn_entity = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gz_spawn_model_launch_source),
         launch_arguments={
-            'world': 'my_world',
+            'world': 'factory',
             'topic': '/robot_description',
             'entity_name': 'polebot_amr',
             'z': '0.65',

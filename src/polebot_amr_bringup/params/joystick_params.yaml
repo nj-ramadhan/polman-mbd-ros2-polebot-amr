@@ -20,8 +20,13 @@ teleop_node:
     scale_angular_turbo:
       yaw: 0.5
 
-
     enable_button: 4
     enable_turbo_button: 5
     
     require_enable_button: true
+    stamped: true
+
+    axis_linear.y: -1
+    axis_linear.z: -1
+    axis_angular.pitch: -1
+    axis_angular.roll: -1    

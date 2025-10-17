@@ -22,12 +22,12 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
-    bringup_dir = get_package_share_directory('polebot_amr_bringup')
-    launch_dir = os.path.join(bringup_dir, 'launch')
+    pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
+    nav2_bringup_launch_dir = os.path.join(pkg_nav2_bringup, 'launch')
     # This checks that tb4 exists needed for the URDF / simulation files.
     # If not using TB4, its safe to remove.
-    sim_dir = get_package_share_directory('polebot_amr_simulation')
-    desc_dir = get_package_share_directory('polebot_amr_description')
+    pkg_polebot_simulation = get_package_share_directory('polebot_amr_simulation')
+    pkg_polebot_description = get_package_share_directory('polebot_amr_description')
 
     # Create the launch configuration variables
     slam = LaunchConfiguration('slam')
@@ -48,7 +48,7 @@ def generate_launch_description():
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='0.40'),  # Warehouse: 2.12
+        'x': LaunchConfiguration('x_pose', default='0.50'),  # Warehouse: 2.12
         'y': LaunchConfiguration('y_pose', default='0.00'),  # Warehouse: -21.3
         'z': LaunchConfiguration('z_pose', default='0.01'),
         'R': LaunchConfiguration('roll', default='0.00'),
@@ -77,7 +77,7 @@ def generate_launch_description():
 
     declare_map_yaml_cmd = DeclareLaunchArgument(
         'map',
-        default_value=os.path.join(bringup_dir, 'maps', 'depot.yaml'),  # Try warehouse.yaml!
+        default_value=os.path.join(pkg_nav2_bringup, 'maps', 'depot.yaml'),  # Try warehouse.yaml!
         description='Full path to map file to load',
     )
 
@@ -89,7 +89,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(bringup_dir, 'params', 'nav2_params.yaml'),
+        default_value=os.path.join(pkg_polebot_description, 'config', 'polebot_amr_nav2_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes',
     )
 
@@ -113,7 +113,7 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         'rviz_config_file',
-        default_value=os.path.join(bringup_dir, 'rviz', 'nav2_default_view.rviz'),
+        default_value=os.path.join(pkg_nav2_bringup, 'rviz', 'nav2_default_view.rviz'),
         description='Full path to the RVIZ config file to use',
     )
 
@@ -139,7 +139,7 @@ def generate_launch_description():
 
     declare_world_cmd = DeclareLaunchArgument(
         'world',
-        default_value=os.path.join(sim_dir, 'worlds', 'depot.sdf'),  # Try warehouse.sdf!
+        default_value=os.path.join(pkg_polebot_simulation, 'worlds', 'depot.sdf'),  # Try warehouse.sdf!
         description='Full path to world model file to load',
     )
 
@@ -149,7 +149,7 @@ def generate_launch_description():
 
     declare_robot_sdf_cmd = DeclareLaunchArgument(
         'robot_sdf',
-        default_value=os.path.join(desc_dir, 'urdf', 'robot', 'polebot_amr.xacro'),
+        default_value=os.path.join(pkg_polebot_description, 'src', 'description', 'polebot_amr_description.sdf'),
         description='Full path to robot sdf file to spawn the robot in gazebo',
     )
 
@@ -166,48 +166,8 @@ def generate_launch_description():
         remappings=remappings,
     )
 
-    joint_state_publisher_cmd = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher',
-        output='screen',
-        parameters=[{'use_sim_time': use_sim_time}],
-        remappings=remappings,
-    )
-
-    controller_config = os.path.join(
-        get_package_share_directory('polebot_amr_controller'),
-        'configs',
-        'polebot_amr_controllers.yaml'
-    )
-
-    controller_manager_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        parameters=[
-            os.path.join(desc_dir, 'urdf', 'robot', 'polebot_amr.xacro'),
-            controller_config,
-            {'use_sim_time': use_sim_time}
-        ],
-        output='screen'
-    )
-
-    spawn_joint_state_broadcaster = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster'],
-        output='screen'
-    )
-
-    spawn_diff_drive_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['diff_drive_controller'],
-        output='screen'
-    )
-
     rviz_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(launch_dir, 'rviz_launch.py')),
+        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_launch_dir, 'rviz_launch.py')),
         condition=IfCondition(use_rviz),
         launch_arguments={
             'namespace': namespace,
@@ -218,7 +178,7 @@ def generate_launch_description():
     )
 
     bringup_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(launch_dir, 'bringup_launch.py')),
+        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_launch_dir, 'bringup_launch.py')),
         launch_arguments={
             'namespace': namespace,
             'use_namespace': use_namespace,
@@ -253,7 +213,7 @@ def generate_launch_description():
 
     set_env_vars_resources = AppendEnvironmentVariable(
             'GZ_SIM_RESOURCE_PATH',
-            os.path.join(sim_dir, 'worlds'))
+            os.path.join(pkg_polebot_simulation, 'worlds'))
     gazebo_client = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('ros_gz_sim'),
@@ -267,7 +227,7 @@ def generate_launch_description():
 
     gz_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(sim_dir, 'launch', 'polebot_amr_spawn.launch.py')),
+            os.path.join(pkg_polebot_simulation, 'launch', 'polebot_amr_spawn.launch.py')),
         launch_arguments={'namespace': namespace,
                           'use_simulator': use_simulator,
                           'use_sim_time': use_sim_time,
