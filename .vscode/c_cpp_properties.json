@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/labrobot-desktop2/polebot_amr_ws/install/diff_drive_controller/include/**",
+        "/opt/ros/jazzy/include/**",
+        "/home/labrobot-desktop2/polebot_amr_ws/src/diff_drive_controller/include/**",
+        "/home/labrobot-desktop2/polebot_amr_ws/src/ros2_lsc/include/**",
+        "/home/labrobot-desktop2/polebot_amr_ws/src/ros2_roboteq/include/**",
+        "/home/labrobot-desktop2/polebot_amr_ws/src/ros2_serial/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ros2",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++17"
+    }
+  ],
+  "version": 4
+}

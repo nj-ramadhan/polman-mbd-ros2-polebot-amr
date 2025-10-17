@@ -52,3 +52,9 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+
+# VSCode
+*.vc.db
+*.vc.db-shm
+.vscode/

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org" name="polebot_amr">
+<robot name="polebot_amr" xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:gz="http://gazebosim.org">
   <xacro:arg name="robot_name" default="polebot_amr"/>
   <xacro:arg name="use_gazebo" default="true"/>
 
