@@ -57,7 +57,7 @@ def generate_launch_description():
         executable='ekf_node',
         name='ekf_node',
         output='screen',
-        parameters=[os.path.join(polebot_desc_dir, 'config/polebot_amr_ekf'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
+        parameters=[os.path.join(polebot_desc_dir, 'config/polebot_amr_ekf_params'), {'use_sim_time': LaunchConfiguration('use_sim_time')}]
     )
 
     return LaunchDescription([

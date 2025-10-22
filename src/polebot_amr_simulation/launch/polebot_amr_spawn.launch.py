@@ -36,12 +36,14 @@ def generate_launch_description():
     use_simulator = LaunchConfiguration('use_simulator')
     robot_name = LaunchConfiguration('robot_name')
     # robot_sdf = LaunchConfiguration('robot_sdf')
-    pose = {'x': LaunchConfiguration('x_pose', default='1.00'),
-            'y': LaunchConfiguration('y_pose', default='-0.50'),
-            'z': LaunchConfiguration('z_pose', default='0.01'),
-            'R': LaunchConfiguration('roll', default='0.00'),
-            'P': LaunchConfiguration('pitch', default='0.00'),
-            'Y': LaunchConfiguration('yaw', default='0.00')}
+    pose = {
+        'x': LaunchConfiguration('x_pose', default='0.50'),
+        'y': LaunchConfiguration('y_pose', default='0.00'),
+        'z': LaunchConfiguration('z_pose', default='0.35'),
+        'R': LaunchConfiguration('roll', default='0.00'),
+        'P': LaunchConfiguration('pitch', default='0.00'),
+        'Y': LaunchConfiguration('yaw', default='0.00'),
+    }
 
     # Declare the launch arguments
     declare_namespace_cmd = DeclareLaunchArgument(

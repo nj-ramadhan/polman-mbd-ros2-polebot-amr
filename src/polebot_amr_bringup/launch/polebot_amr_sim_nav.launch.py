@@ -48,12 +48,12 @@ def generate_launch_description():
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='0.50'),  # Warehouse: 2.12
-        'y': LaunchConfiguration('y_pose', default='0.00'),  # Warehouse: -21.3
-        'z': LaunchConfiguration('z_pose', default='0.01'),
+        'x': LaunchConfiguration('x_pose', default='0.50'),
+        'y': LaunchConfiguration('y_pose', default='0.00'),
+        'z': LaunchConfiguration('z_pose', default='0.35'),
         'R': LaunchConfiguration('roll', default='0.00'),
         'P': LaunchConfiguration('pitch', default='0.00'),
-        'Y': LaunchConfiguration('yaw', default='0.00'),  # Warehouse: 1.57
+        'Y': LaunchConfiguration('yaw', default='0.00'),
     }
     robot_name = LaunchConfiguration('robot_name')
     robot_sdf = LaunchConfiguration('robot_sdf')
@@ -265,10 +265,10 @@ def generate_launch_description():
 
     ld.add_action(set_env_vars_resources)
     ld.add_action(world_sdf_xacro)
-    ld.add_action(remove_temp_sdf_file)
-    ld.add_action(gz_robot)
     ld.add_action(gazebo_server)
     ld.add_action(gazebo_client)
+    ld.add_action(gz_robot)
+    ld.add_action(remove_temp_sdf_file)
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(start_robot_state_publisher_cmd)
