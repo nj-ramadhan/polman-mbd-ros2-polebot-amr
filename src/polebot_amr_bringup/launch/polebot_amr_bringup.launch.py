@@ -19,8 +19,9 @@ def generate_launch_description():
         pkg_polebot_description, 'config', 'polebot_amr_nav2_params.yaml'
     ])
 
+    # Use the joystick params shipped with the robot description package
     joy_params_file = PathJoinSubstitution([
-        pkg_polebot_bringup, 'params', 'joystick_params.yaml'
+        pkg_polebot_description, 'config', 'polebot_amr_joystick_params.yaml'
     ])
 
     joy_node = Node(

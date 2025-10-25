@@ -69,7 +69,7 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         'rviz_config_file',
-        default_value=os.path.join(polebot_desc_dir, 'rviz', 'polebot_amr.rviz'),
+        default_value=os.path.join(polebot_desc_dir, 'rviz', 'polebot_amr_sim.rviz'),
         description='Full path to the RVIZ config file to use',
     )
 
@@ -91,7 +91,7 @@ def generate_launch_description():
 
     declare_world_cmd = DeclareLaunchArgument(
         'world',
-        default_value=os.path.join(polebot_sim_dir, 'worlds', 'depot.sdf'),
+        default_value=os.path.join(polebot_sim_dir, 'world', 'depot.sdf'),
         description='Full path to world model file to load',
     )
 
@@ -161,7 +161,7 @@ def generate_launch_description():
 
     set_env_vars_resources = AppendEnvironmentVariable(
             'GZ_SIM_RESOURCE_PATH',
-            os.path.join(polebot_sim_dir, 'worlds'))
+            os.path.join(polebot_sim_dir, 'world'))
     gazebo_client = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('ros_gz_sim'),

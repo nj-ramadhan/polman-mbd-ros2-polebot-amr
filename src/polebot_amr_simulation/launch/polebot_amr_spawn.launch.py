@@ -79,7 +79,7 @@ def generate_launch_description():
         parameters=[
             {
                 'config_file': os.path.join(
-                    sim_dir, 'configs', 'polebot_amr_bridge.yaml'
+                    sim_dir, 'config', 'polebot_amr_bridge.yaml'
                 ),
                 'use_sim_time': use_sim_time,
             }

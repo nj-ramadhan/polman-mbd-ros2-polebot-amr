@@ -36,12 +36,12 @@ install(
 
 # Installer les fichiers URDF/Xacro et les meshes
 install(DIRECTORY
-  worlds
+  world
   DESTINATION share/${PROJECT_NAME}
 )
 
 install(DIRECTORY
-  configs
+  config
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -7,7 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
       Splitter Ratio: 0.5
-    Tree Height: 302
+    Tree Height: 775
 Visualization Manager:
   Class: ""
   Displays:
@@ -61,17 +61,32 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        casterwhl_fl_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        casterwhl_fr_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        casterwhl_rl_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        casterwhl_rr_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         drivewhl_l_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         drivewhl_r_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        front_caster:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -107,19 +122,17 @@ Visualization Manager:
           Value: true
         camera_link:
           Value: true
-        drivewhl_l_link:
+        casterwhl_fl_link:
           Value: true
-        drivewhl_r_link:
+        casterwhl_fr_link:
           Value: true
-        front_caster:
+        casterwhl_rl_link:
+          Value: true
+        casterwhl_rr_link:
           Value: true
         imu_link:
           Value: true
         lidar_link:
-          Value: true
-        map:
-          Value: true
-        odom:
           Value: true
       Marker Scale: 0.30000001192092896
       Name: TF
@@ -132,20 +145,18 @@ Visualization Manager:
             {}
           camera_link:
             {}
-          drivewhl_l_link:
+          casterwhl_fl_link:
             {}
-          drivewhl_r_link:
+          casterwhl_fr_link:
             {}
-          front_caster:
+          casterwhl_rl_link:
+            {}
+          casterwhl_rr_link:
             {}
           imu_link:
             {}
           lidar_link:
             {}
-        map:
-          {}
-        odom:
-          {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -241,7 +252,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: map
+    Fixed Frame: base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -259,7 +270,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 10
+      Distance: 5.834977626800537
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -274,18 +285,18 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7053982615470886
+      Pitch: 0.295398473739624
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.6754000186920166
+      Yaw: 2.805413246154785
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 538
+  Height: 1011
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd000000010000000000000156000001bcfc0200000001fb000000100044006900730070006c006100790073010000003f000001bc000000cc00ffffff00000160000001bc00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
-  Width: 700
-  X: 1124
-  Y: 505
+  QMainWindow State: 000000ff00000000fd00000001000000000000015600000395fc0200000001fb000000100044006900730070006c006100790073010000003f00000395000000cc00ffffff000002430000039500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Width: 927
+  X: 993
+  Y: 32

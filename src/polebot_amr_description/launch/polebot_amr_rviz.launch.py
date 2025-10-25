@@ -5,13 +5,13 @@ from launch_ros.substitutions import FindPackageShare
 import xacro
 
 def generate_launch_description():
-    description_pkg_path = FindPackageShare('polebot_amr_description').find('polebot_amr_description')       
-    xacro_file = os.path.join(description_pkg_path, 'urdf', 'robot', 'polebot_amr.xacro')
+    pkg_polebot_description = FindPackageShare('polebot_amr_description').find('polebot_amr_description')       
+    xacro_file = os.path.join(pkg_polebot_description, 'src', 'description', 'polebot_amr_description.sdf')
 
     # Pass 'package_path' as an argument to xacro
     robot_description_config = xacro.process_file(
         xacro_file,
-        mappings={'package_path': description_pkg_path}
+        mappings={'package_path': pkg_polebot_description}
     ).toxml()
 
     return LaunchDescription([
@@ -30,7 +30,7 @@ def generate_launch_description():
         Node(
             package='rviz2',
             executable='rviz2',
-            arguments=['-d', os.path.join(description_pkg_path, 'rviz', 'polebot_amr.rviz')],
+            arguments=['-d', os.path.join(pkg_polebot_description, 'rviz', 'polebot_amr_sim.rviz')],
             name='rviz2',
             output='screen',
         )
