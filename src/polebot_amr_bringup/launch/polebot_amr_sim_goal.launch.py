@@ -243,16 +243,16 @@ def generate_launch_description():
 
     start_nav_to_pose_cmd = Node(
         package='polebot_amr_navigation',
-        executable='nav_to_pose',
+        executable='nav_to_pose.py',
         output='screen',
-       parameters=[{'use_sim_time': use_sim_time}]
+        parameters=[{'use_sim_time': use_sim_time}]
     )
 
     start_assisted_teleop_cmd = Node(
         package='polebot_amr_navigation',
-        executable='assisted_teleoperation',
+        executable='assisted_teleoperation.py',
         output='screen',
-       parameters=[{'use_sim_time': use_sim_time}]
+        parameters=[{'use_sim_time': use_sim_time}]
     )
 
     # Create the launch description and populate

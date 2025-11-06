@@ -26,14 +26,10 @@ ament_target_dependencies(cmd_vel_relay
   geometry_msgs
 )
 
-# ament_target_dependencies(rclcpp
-#   geometry_msgs
-# )
- 
-# install(TARGETS
-#   cmd_vel_relay
-#   DESTINATION lib/${PROJECT_NAME}
-# )
+install(TARGETS
+  cmd_vel_relay
+  DESTINATION lib/${PROJECT_NAME}
+)
  
 install(
   DIRECTORY config
