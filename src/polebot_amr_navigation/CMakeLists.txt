@@ -20,16 +20,16 @@ find_package(tf2_ros REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(cmd_vel_relay src/cmd_vel_relay_node.cpp)
-ament_target_dependencies(cmd_vel_relay
-  rclcpp
-  geometry_msgs
-)
+# add_executable(cmd_vel_relay src/cmd_vel_relay_node.cpp)
+# ament_target_dependencies(cmd_vel_relay
+#   rclcpp
+#   geometry_msgs
+# )
 
-install(TARGETS
-  cmd_vel_relay
-  DESTINATION lib/${PROJECT_NAME}
-)
+# install(TARGETS
+#   cmd_vel_relay
+#   DESTINATION lib/${PROJECT_NAME}
+# )
  
 install(
   DIRECTORY config

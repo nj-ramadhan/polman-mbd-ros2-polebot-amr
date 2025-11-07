@@ -48,7 +48,7 @@ public:
         // Create publisher for /mecanum_drive_controller/cmd_vel topic
         // Again, '10' is the queue size for outgoing messages
         publisher_ = this->create_publisher<geometry_msgs::msg::TwistStamped>(
-            "/diffdrive_controller/cmd_vel", 10);
+            "/diff_drive_controller/cmd_vel", 10);
 
         // Log a message indicating the node has started
         RCLCPP_INFO(this->get_logger(), "Velocity relay node started");
