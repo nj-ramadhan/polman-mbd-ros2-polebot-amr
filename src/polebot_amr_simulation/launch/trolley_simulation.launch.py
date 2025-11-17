@@ -34,19 +34,19 @@ def generate_launch_description():
     # Launch configuration variables specific to simulation
     rviz_config_file = LaunchConfiguration('rviz_config_file')
     use_simulator = LaunchConfiguration('use_simulator')
-    use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
+    use_trolley_state_pub = LaunchConfiguration('use_trolley_state_pub')
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='-2.00'),
+        'x': LaunchConfiguration('x_pose', default='-4.00'),
         'y': LaunchConfiguration('y_pose', default='0.00'),
         'z': LaunchConfiguration('z_pose', default='0.35'),
         'R': LaunchConfiguration('roll', default='0.00'),
         'P': LaunchConfiguration('pitch', default='0.00'),
         'Y': LaunchConfiguration('yaw', default='0.00'),
     }
-    robot_name = LaunchConfiguration('robot_name')
-    robot_sdf = LaunchConfiguration('robot_sdf')
+    trolley_name = LaunchConfiguration('trolley_name')
+    trolley_sdf = LaunchConfiguration('trolley_sdf')
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -79,10 +79,10 @@ def generate_launch_description():
         description='Whether to start the simulator',
     )
 
-    declare_use_robot_state_pub_cmd = DeclareLaunchArgument(
-        'use_robot_state_pub',
+    declare_use_trolley_state_pub_cmd = DeclareLaunchArgument(
+        'use_trolley_state_pub',
         default_value='True',
-        description='Whether to start the robot state publisher',
+        description='Whether to start the trolley state publisher',
     )
 
     declare_simulator_cmd = DeclareLaunchArgument(
@@ -95,28 +95,28 @@ def generate_launch_description():
         description='Full path to world model file to load',
     )
 
-    declare_robot_name_cmd = DeclareLaunchArgument(
-        'robot_name', default_value='polebot_amr', description='name of the robot'
+    declare_trolley_name_cmd = DeclareLaunchArgument(
+        'trolley_name', default_value='trolley', description='name of the trolley'
     )
 
-    declare_robot_sdf_cmd = DeclareLaunchArgument(
-        'robot_sdf',
-        default_value=os.path.join(polebot_desc_dir, 'src', 'description', 'polebot_amr_description.sdf'),
-        description='Full path to robot sdf file to spawn the robot in gazebo',
+    declare_trolley_sdf_cmd = DeclareLaunchArgument(
+        'trolley_sdf',
+        default_value=os.path.join(polebot_desc_dir, 'src', 'description', 'trolley_description.sdf'),
+        description='Full path to trolley sdf file to spawn the trolley in gazebo',
     )
 
-    start_robot_state_publisher_cmd = Node(
-        condition=IfCondition(use_robot_state_pub),
+    start_trolley_state_publisher_cmd = Node(
+        condition=IfCondition(use_trolley_state_pub),
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        name='robot_state_publisher',
+        name='trolley_state_publisher',
         namespace=namespace,
         output='screen',
         remappings=remappings,
         parameters=[{
             'use_sim_time': use_sim_time,
             'robot_description': ParameterValue(
-                Command(['xacro', ' ', robot_sdf]),
+                Command(['xacro', ' ', trolley_sdf]),
                 value_type=str
             )
         }],        
@@ -172,14 +172,14 @@ def generate_launch_description():
         launch_arguments={'gz_args': ['-v4 -g ']}.items(),
     )
 
-    gz_robot = IncludeLaunchDescription(
+    gz_trolley = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(launch_dir, 'polebot_amr_spawn.launch.py')),
+            os.path.join(launch_dir, 'trolley_spawn.launch.py')),
         launch_arguments={'namespace': namespace,
                           'use_simulator': use_simulator,
                           'use_sim_time': use_sim_time,
-                          'robot_name': robot_name,
-                          'robot_sdf': robot_sdf,
+                          'robot_name': trolley_name,
+                          'robot_sdf': trolley_sdf,
                           'x_pose': pose['x'],
                           'y_pose': pose['y'],
                           'z_pose': pose['z'],
@@ -196,21 +196,21 @@ def generate_launch_description():
 
     ld.add_action(declare_rviz_config_file_cmd)
     ld.add_action(declare_use_simulator_cmd)
-    ld.add_action(declare_use_robot_state_pub_cmd)
+    ld.add_action(declare_use_trolley_state_pub_cmd)
     ld.add_action(declare_simulator_cmd)
     ld.add_action(declare_world_cmd)
-    ld.add_action(declare_robot_name_cmd)
-    ld.add_action(declare_robot_sdf_cmd)
+    ld.add_action(declare_trolley_name_cmd)
+    ld.add_action(declare_trolley_sdf_cmd)
 
     ld.add_action(set_env_vars_resources)
     ld.add_action(world_sdf_xacro)
     ld.add_action(remove_temp_sdf_file)
-    ld.add_action(gz_robot)
+    ld.add_action(gz_trolley)
     ld.add_action(gazebo_server)
     ld.add_action(gazebo_client)
 
     # Add the actions to launch all of the navigation nodes
-    ld.add_action(start_robot_state_publisher_cmd)
+    ld.add_action(start_trolley_state_publisher_cmd)
     ld.add_action(rviz_cmd)
 
 

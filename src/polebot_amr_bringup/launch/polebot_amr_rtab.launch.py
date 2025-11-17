@@ -16,9 +16,7 @@ from launch.conditions import IfCondition
 from launch.event_handlers import OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, LaunchConfiguration, PythonExpression
-
 from launch_ros.actions import Node
-
 
 def generate_launch_description():
     # Get the launch directory
@@ -37,12 +35,14 @@ def generate_launch_description():
     autostart = LaunchConfiguration('autostart')
     use_composition = LaunchConfiguration('use_composition')
     use_respawn = LaunchConfiguration('use_respawn')
+    localization = LaunchConfiguration('localization')
 
     # Launch configuration variables specific to simulation
     rviz_config_file = LaunchConfiguration('rviz_config_file')
     use_simulator = LaunchConfiguration('use_simulator')
     use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
     use_rviz = LaunchConfiguration('use_rviz')
+    use_rtabmap_viz = LaunchConfiguration('use_rtabmap_viz')    
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
@@ -85,6 +85,11 @@ def generate_launch_description():
         description='Use simulation (Gazebo) clock if true',
     )
 
+    declare_use_localization_cmd = DeclareLaunchArgument(
+        'localization', default_value='false',
+        description='Launch in localization mode.'
+    )
+    
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
         default_value=os.path.join(pkg_polebot_description, 'config', 'polebot_amr_nav2_params.yaml'),
@@ -149,6 +154,49 @@ def generate_launch_description():
         'robot_sdf',
         default_value=os.path.join(pkg_polebot_description, 'src', 'description', 'polebot_amr_description.sdf'),
         description='Full path to robot sdf file to spawn the robot in gazebo',
+    )
+
+    rtabmap_remappings = [
+        ('rgb/image', '/depth_camera/rgb/image_raw'),
+        ('depth/image', '/depth_camera/depth/image_raw'),
+        ('rgb/camera_info', '/depth_camera/camera_info'),
+    ]
+    rtabmap_remappings.extend(remappings)
+
+    # RTAB-Map SLAM node optimized for 3D mapping
+    rtabmap_node = Node(
+        package='rtabmap_slam',
+        executable='rtabmap',
+        name='rtabmap',
+        namespace=namespace,
+        output='screen',
+        parameters=[{
+            'frame_id':'base_footprint',
+            'use_sim_time':use_sim_time,
+            'subscribe_depth':True,
+            'use_action_for_goal':True,
+            'Reg/Force3DoF':'true',
+            'Grid/RayTracing':'true', # Fill empty space
+            'Grid/3D':'false', # Use 2D occupancy
+            'Grid/RangeMax':'3',
+            'Grid/NormalsSegmentation':'false', # Use passthrough filter to detect obstacles
+            'Grid/MaxGroundHeight':'0.05', # All points above 5 cm are obstacles
+            'Grid/MaxObstacleHeight':'0.4',  # All points over 1 meter are ignored
+            'Optimizer/GravitySigma':'0' # Disable imu constraints (we are already in 2D)
+        }],
+        remappings=rtabmap_remappings,
+    )
+    
+    rtabmap_viz_node = Node(
+        condition=IfCondition(use_rtabmap_viz),
+        package='rtabmap_viz',
+        executable='rtabmap_viz',
+        name='rtabmap_viz',
+        namespace=namespace,
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}],
+        remappings=rtabmap_remappings,
+        
     )
 
     start_robot_state_publisher_cmd = Node(
@@ -272,5 +320,8 @@ def generate_launch_description():
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(rviz_cmd)
     ld.add_action(bringup_cmd)
+
+    ld.add_action(rtabmap_node)
+    ld.add_action(rtabmap_viz_node)
 
     return ld

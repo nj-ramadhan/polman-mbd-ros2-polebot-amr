@@ -5,39 +5,43 @@
     <xacro:property name="XACRO_DIR" value="${xacro.abs_filename('')}" />
 
     <!-- Define robot constants -->
+    <xacro:property name="base_mass" value="84.837"/>
     <xacro:property name="base_width" value="0.670"/>
     <xacro:property name="base_length" value="1.172"/>
     <xacro:property name="base_height" value="0.563"/>
-    <xacro:property name="base_mass" value="84.837"/>
-
+    
+    <xacro:property name="monitor_mass" value="16.008"/>
     <xacro:property name="monitor_width" value="0.1"/>
     <xacro:property name="monitor_length" value="0.1"/>
     <xacro:property name="monitor_height" value="0.9"/>
     <xacro:property name="monitor_zoff" value="0.730"/>
     <xacro:property name="monitor_xoff" value="0.204"/>    
-    <xacro:property name="monitor_mass" value="16.008"/>
 
+    <xacro:property name="wheel_mass" value="3.610"/>
     <xacro:property name="wheel_radius" value="0.079"/>
     <xacro:property name="wheel_width" value="0.055"/>
+    <xacro:property name="wheel_xoff" value="0.000"/>
     <xacro:property name="wheel_yoff" value="-0.300"/>
     <xacro:property name="wheel_zoff" value="0.231"/>
-    <xacro:property name="wheel_xoff" value="0.000"/>
-    <xacro:property name="wheel_mass" value="3.610"/>
 
+    <xacro:property name="caster_mass" value="1.355"/>
     <xacro:property name="caster_radius" value="0.0625"/>
     <xacro:property name="caster_width" value="0.0520"/>    
-    <xacro:property name="caster_yoff" value="-0.0289"/>
-    <xacro:property name="caster_zoff" value="0.245"/>
     <xacro:property name="caster_xoff" value="0.300"/> <!-- 0.356 -->
-    <xacro:property name="caster_mass" value="1.355"/>
+    <xacro:property name="caster_yoff" value="-0.0289"/>
+    <xacro:property name="caster_zoff" value="0.245"/>   
 
-    <xacro:property name="lidar_zoff" value="0.040"/>
-    <xacro:property name="lidar_xoff" value="0.496"/>
+    <xacro:property name="imu_mass" value="0.1"/>
+    <xacro:property name="imu_xoff" value="0.1"/>
+    <xacro:property name="imu_zoff" value="0.1"/>
+
     <xacro:property name="lidar_mass" value="0.314"/>
+    <xacro:property name="lidar_xoff" value="0.496"/>
+    <xacro:property name="lidar_zoff" value="0.040"/>
 
-    <xacro:property name="camera_zoff" value="-0.023"/>
-    <xacro:property name="camera_xoff" value="0.560"/>
     <xacro:property name="camera_mass" value="0.123"/>
+    <xacro:property name="camera_xoff" value="0.560"/>
+    <xacro:property name="camera_zoff" value="-0.023"/>
 
     <!-- Define some commonly used inertial properties  -->
     <xacro:macro name="box_inertia" params="m w l h">
@@ -111,16 +115,16 @@
     </link>
 
     <!-- Robot Footprint -->
-    <link name='base_footprint'>
-      <pose relative_to="base_joint"/>
-      <xacro:box_inertia m="${base_mass}" w="${base_width}" l="${base_length}" h="${base_height}"/>
-    </link>
-
     <joint name='base_joint' type='fixed'>
       <parent>base_link</parent>
       <child>base_footprint</child>
       <pose relative_to="base_link">0.0 0.0 ${-(wheel_radius+wheel_zoff)} 0 0 0</pose>
     </joint>
+    
+    <link name='base_footprint'>
+      <pose relative_to="base_joint"/>
+      <xacro:box_inertia m="${base_mass}" w="${base_width}" l="${base_length}" h="${base_height}"/>
+    </link>
 
     <!-- Display Monitor -->
     <joint name='monitor_joint' type='fixed'>
@@ -152,6 +156,19 @@
 
     <!-- Wheels -->
     <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
+      <joint name="${prefix}_joint" type="revolute">
+        <parent>base_link</parent>
+        <child>${prefix}_link</child>
+        <pose relative_to="base_link">${x_reflect*wheel_xoff} ${y_reflect*wheel_yoff} ${-wheel_zoff} 0 0 0</pose>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <limit>
+            <lower>-inf</lower>
+            <upper>inf</upper>
+          </limit>
+        </axis>
+      </joint>
+
       <link name="${prefix}_link">
         <pose relative_to="${prefix}_joint"/>
         <visual name="${prefix}_link_visual">
@@ -180,19 +197,6 @@
 
         <xacro:cylinder_inertia m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}"/>
       </link>
-
-      <joint name="${prefix}_joint" type="revolute">
-        <parent>base_link</parent>
-        <child>${prefix}_link</child>
-        <pose relative_to="base_link">${x_reflect*wheel_xoff} ${y_reflect*wheel_yoff} ${-wheel_zoff} 0 0 0</pose>
-        <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-            <lower>-inf</lower>
-            <upper>inf</upper>
-          </limit>
-        </axis>
-      </joint>
     </xacro:macro>
 
     <xacro:wheel prefix="drivewhl_l" x_reflect="-1" y_reflect="1" />
@@ -200,6 +204,12 @@
 
     <!-- Caster Wheels -->
     <xacro:macro name="caster_wheel" params="prefix x_reflect y_reflect">
+      <joint name="${prefix}_joint" type="fixed">
+        <parent>base_link</parent>
+        <child>${prefix}_link</child>
+        <pose relative_to="base_link">${x_reflect*caster_xoff} ${y_reflect*(base_width/2+caster_yoff)} ${-caster_zoff} 0 0 0</pose>
+      </joint>
+
       <link name="${prefix}_link">
         <pose relative_to="${prefix}_joint"/>
         <visual name="${prefix}_link_visual">
@@ -225,19 +235,14 @@
             </cylinder>
           </geometry>
           <surface><friction><ode>
-            <mu>0.0001</mu>
-            <mu2>0.0001</mu2>
+            <fdir1>1 0 0</fdir1>   <!-- μ along X (rolling), μ₂ along Y (slip) -->
+            <mu>0.01</mu>          <!-- low rolling resistance (free spin) -->
+            <mu2>0.01</mu2> 
           </ode></friction></surface>          
         </collision>
 
         <xacro:cylinder_inertia m="${caster_mass}" r="${caster_radius}" h="${caster_width}"/>        
       </link>
-
-      <joint name="${prefix}_joint" type="fixed">
-        <parent>base_link</parent>
-        <child>${prefix}_link</child>
-        <pose relative_to="base_link">${x_reflect*caster_xoff} ${y_reflect*(base_width/2+caster_yoff)} ${-caster_zoff} 0 0 0</pose>
-      </joint>
     </xacro:macro>
 
     <xacro:caster_wheel prefix="casterwhl_fl" x_reflect="-1" y_reflect="1" />
@@ -334,29 +339,6 @@
       </sensor>
     </link>    
 
-    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
-      <!-- wheels -->
-      <left_joint>drivewhl_l_joint</left_joint>
-      <right_joint>drivewhl_r_joint</right_joint>
-
-      <!-- kinematics -->
-      <wheel_separation>${(2*wheel_yoff)}</wheel_separation>
-      <wheel_radius>${wheel_radius}</wheel_radius>
-
-      <!-- limits -->
-      <max_linear_acceleration>0.1</max_linear_acceleration>
-
-      <!-- input -->
-      <topic>/cmd_vel</topic>
-
-      <!-- output -->
-      <odom_topic>/odom</odom_topic>
-      <tf_topic>/tf</tf_topic>
-
-      <frame_id>odom</frame_id>
-      <child_frame_id>base_link</child_frame_id>
-    </plugin>
-
     <plugin
       filename="gz-sim-joint-state-publisher-system"
       name="gz::sim::systems::JointStatePublisher">
@@ -446,7 +428,7 @@
       </collision>
 
       <xacro:box_inertia m="0.123" w="0.015" l="0.130" h="0.0222"/>
-
+      
       <sensor name="depth_camera" type="rgbd_camera">
         <always_on>true</always_on>
         <visualize>true</visualize>
@@ -461,10 +443,34 @@
           </image>
           <clip>
             <near>0.05</near>
-            <far>3</far>
+            <far>3.0</far>
           </clip>
         </camera>
       </sensor>
-    </link>        
+    </link>
+
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <!-- wheels -->
+      <left_joint>drivewhl_l_joint</left_joint>
+      <right_joint>drivewhl_r_joint</right_joint>
+
+      <!-- kinematics -->
+      <wheel_separation>${(2*wheel_yoff)}</wheel_separation>
+      <wheel_radius>${wheel_radius}</wheel_radius>
+
+      <!-- limits -->
+      <max_linear_acceleration>0.1</max_linear_acceleration>
+
+      <!-- input -->
+      <topic>/cmd_vel</topic>
+
+      <!-- output -->
+      <odom_topic>/odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
+
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_link</child_frame_id>
+    </plugin>
+
   </model>
 </sdf>

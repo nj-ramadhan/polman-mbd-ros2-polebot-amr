@@ -22,7 +22,7 @@ def generate_launch_description():
     robot_name = LaunchConfiguration('robot_name')
     # robot_sdf = LaunchConfiguration('robot_sdf')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='-2.00'),
+        'x': LaunchConfiguration('x_pose', default='-4.00'),
         'y': LaunchConfiguration('y_pose', default='0.00'),
         'z': LaunchConfiguration('z_pose', default='0.35'),
         'R': LaunchConfiguration('roll', default='0.00'),
@@ -49,8 +49,8 @@ def generate_launch_description():
 
     declare_robot_name_cmd = DeclareLaunchArgument(
         'robot_name',
-        default_value='polebot_amr',
-        description='name of the robot')
+        default_value='trolley',
+        description='name of the trolley')
 
     # declare_robot_sdf_cmd = DeclareLaunchArgument(
     #     'robot_sdf',
@@ -64,7 +64,7 @@ def generate_launch_description():
         parameters=[
             {
                 'config_file': os.path.join(
-                    sim_dir, 'config', 'polebot_amr_bridge.yaml'
+                    sim_dir, 'config', 'trolley_bridge.yaml'
                 ),
                 'use_sim_time': use_sim_time,
             }
