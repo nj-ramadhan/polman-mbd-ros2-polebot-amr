@@ -1,0 +1,1 @@
+{"root":["./src/firebase.ts","./src/main.ts","./src/vite-env.d.ts","./src/route/index.ts","./src/types/roslib.d.ts","./src/App.vue","./src/components/Dashboard.vue","./src/components/HelloWorld.vue","./src/components/Login.vue","./src/components/Register.vue"],"errors":true,"version":"5.8.3"}
