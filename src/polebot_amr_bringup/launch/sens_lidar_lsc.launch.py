@@ -40,11 +40,18 @@ def generate_launch_description():
         parameters=[{
             'addr': '192.168.0.1',
             'port': 8000,
-            'frame_id': 'lidar_link',
+            'frame_id': 'lidar_link_corrected',
             'range_min': 0.05,
             'range_max': 25.0,
             'intensities': True
         }]
+    )
+
+    static_transform_lidar_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='lidar_to_corrected_tf',
+        arguments=['0', '0', '0', '-1.5708', '0', '0', 'lidar_link', 'lidar_link_corrected']
     )
 
     rviz_node = Node(
@@ -61,6 +68,7 @@ def generate_launch_description():
         joint_state_node,
 
         autonics_lsc_lidar_node,
+        static_transform_lidar_node,
 
         rviz_node,
     ])
