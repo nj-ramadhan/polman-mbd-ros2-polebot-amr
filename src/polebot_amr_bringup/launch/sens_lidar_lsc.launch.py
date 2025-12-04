@@ -10,7 +10,7 @@ import xacro
 def generate_launch_description():
     pkg_polebot_description = FindPackageShare('polebot_amr_description').find('polebot_amr_description')
     xacro_file = os.path.join(pkg_polebot_description, 'src', 'description', 'polebot_amr_description.sdf')
-    rviz_config = os.path.join(pkg_polebot_description, 'rviz', 'polebot_amr_sim.rviz')
+    rviz_config = os.path.join(pkg_polebot_description, 'rviz', 'polebot_amr_sens.rviz')
 
     robot_description_config = xacro.process_file(
         xacro_file,

@@ -52,6 +52,21 @@ def generate_launch_description():
         }.items()
     )
 
+    autonics_lsc_lidar_node = Node(
+        package='lsc_ros2_driver',
+        executable='autonics_lsc_lidar',
+        name='autonics_lidar',
+        output='screen',
+        parameters=[{
+            'addr': '192.168.0.1',
+            'port': 8000,
+            'frame_id': 'lidar_link',
+            'range_min': 0.05,
+            'range_max': 25.0,
+            'intensities': True
+        }]
+    )
+
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -66,6 +81,7 @@ def generate_launch_description():
         joint_state_node,
 
         orbbec_camera_launch,
+        autonics_lsc_lidar_node,
 
         rviz_node,
     ])
