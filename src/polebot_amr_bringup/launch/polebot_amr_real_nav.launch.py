@@ -169,6 +169,14 @@ def generate_launch_description():
         }]
     )
 
+    # Replace fake_odom + robot_state_publisher with pure static TFs:
+    static_tf_map_odom = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='map_to_odom',
+        arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
+    )
+
     slam_params_file = os.path.join(
         pkg_polebot_bringup, 'config', 'polebot_amr_mapper_params.yaml'
     )
@@ -179,12 +187,11 @@ def generate_launch_description():
             {'use_sim_time': use_sim_time}
         ],
         package='slam_toolbox',
-        executable='async_slam_toolbox_node',   # or 'sync_slam_toolbox_node'
+        executable='sync_slam_toolbox_node',
         name='slam_toolbox',
         output='screen',
-        # Remap if needed:
-        # remappings=[('/scan', '/scan')]
     )
+
     # --- Nav2 Navigation Stack ---
     nav2_bringup_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -243,6 +250,8 @@ def generate_launch_description():
     # ld.add_action(orbbec_camera_launch)
 
     ld.add_action(fake_odom_node)
+    ld.add_action(static_tf_map_odom)
+    
     ld.add_action(start_slam_toolbox_node)
 
     # Navigation & Visualization

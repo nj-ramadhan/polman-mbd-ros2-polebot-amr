@@ -2,44 +2,69 @@
 slam_toolbox:
   ros__parameters:
 
-    # Plugin
-    solver_plugin: "solver_plugins::CeresSolver"
-    ceres_linear_solver: "SPARSE_NORMAL_CHOLESKY"
-    ceres_preconditioner: "JACOBI"
-    ceres_trust_strategy: "LEVENBERG_MARQUARDT"
-    ceres_dogleg_type: "TRADITIONAL_DOGLEG"
-    ceres_loss_function: "None"
+    # # Plugin
+    # solver_plugin: "solver_plugins::CeresSolver"
+    # ceres_linear_solver: "SPARSE_NORMAL_CHOLESKY"
+    # ceres_preconditioner: "JACOBI"
+    # ceres_trust_strategy: "LEVENBERG_MARQUARDT"
+    # ceres_dogleg_type: "TRADITIONAL_DOGLEG"
+    # ceres_loss_function: "None"
 
     # Frame
     odom_frame: "odom"
     map_frame: "map"
     base_frame: "base_link"
-    scan_topic: "/scan"  # ← must match your LiDAR topic
+    # scan_topic: "/scan"  # ← must match your LiDAR topic
 
-    # Rate & Timing
-    publish_tf: true
-    publish_clock: false
-    transform_publish_period: 0.05  # 20 Hz
-    map_update_interval: 2.0        # seconds
+    # # For Async mapping, perfect for Robot odometry use
+    # # Rate & Timing
+    # publish_tf: true
+    # publish_clock: false
+    # transform_publish_period: 0.05  # 20 Hz
+    # map_update_interval: 2.0        # seconds
 
-    # Laser
-    max_laser_range: 25.0
-    minimum_time_interval: 0.5
-    transform_timeout: 0.2
-    tf_buffer_duration: 30.0
-    stack_size_to_use: 40000000     # 40MB
+    # # Laser
+    # max_laser_range: 25.0
+    # minimum_time_interval: 0.5
+    # transform_timeout: 0.3
+    # tf_buffer_duration: 30.0
+    # stack_size_to_use: 40000000     # 40MB
 
-    # Correlation Scan Matcher
-    resolution: 0.05                # meters/pixel
-    max_scan_buffer_size: 10
-    scan_buffer_size: 10            # ← critical for "queue full" fix!
-    scan_buffer_maximum_scan_angle_difference: 0.3
-    scan_buffer_minimum_distance_between_scans: 0.5
+    # # Correlation Scan Matcher
+    # resolution: 0.05                # meters/pixel
+    # max_scan_buffer_size: 20
+    # scan_buffer_size: 20            # ← critical for "queue full" fix!
+    # scan_buffer_maximum_scan_angle_difference: 0.3
+    # scan_buffer_minimum_distance_between_scans: 0.5
 
-    # Debug
-    debug_logging: false
-    throttle_scans: 1
+    # # Debug
+    # debug_logging: false
+    # throttle_scans: 1
+    # use_scan_matching: true
+    # use_scan_barycenter: true
+    # minimum_travel_distance: 0.5
+    # minimum_travel_heading: 0.5
+
+    # # For Sync mapping, perfect for Handheld use 
+    # Critical for handheld:
     use_scan_matching: true
     use_scan_barycenter: true
-    minimum_travel_distance: 0.5
-    minimum_travel_heading: 0.5
+    use_laser_scan_for_translation: true   # ← prioritize laser over odom
+    # ↓ Allow larger motion between scans (since you move by hand)
+    minimum_travel_distance: 0.1     # was 0.5 — lower for handheld
+    minimum_travel_heading: 0.1      # was 0.5 — radians (~5.7°)
+
+    # Buffer & timing — prevent "queue full"
+    scan_buffer_size: 30             # ↑ increase from 10/20
+    max_scan_buffer_size: 50         # ↑ safety margin
+    transform_timeout: 0.5           # ↑ generous for manual motion
+    transform_publish_period: 0.1    # 10 Hz — reasonable for mapping
+
+    # Laser params (Autonics LSC)
+    max_laser_range: 25.0
+    minimum_time_interval: 0.1       # ↓ allow faster scans (5 Hz = 0.2s; 0.1 is safe)
+    scan_topic: "/scan"
+
+    # Optional: disable odom reliance
+    trust_odom_with_scan_matching: false  # ← important!
+    # publish_odom: false  # if you want to disable odom entirely (advanced)    
