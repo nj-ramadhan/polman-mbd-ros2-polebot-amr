@@ -22,9 +22,10 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
-    pkg_polebot_simulation = get_package_share_directory('polebot_amr_simulation')
     pkg_polebot_description = get_package_share_directory('polebot_amr_description')
-
+    pkg_polebot_simulation = get_package_share_directory('polebot_amr_simulation')
+    pkg_polebot_bringup = get_package_share_directory('polebot_amr_bringup')
+    
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')

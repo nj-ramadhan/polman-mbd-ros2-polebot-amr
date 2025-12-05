@@ -22,8 +22,9 @@ def generate_launch_description():
     # Get the launch directory
     pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
     nav2_bringup_launch_dir = os.path.join(pkg_nav2_bringup, 'launch')
-    pkg_polebot_simulation = get_package_share_directory('polebot_amr_simulation')
     pkg_polebot_description = get_package_share_directory('polebot_amr_description')
+    pkg_polebot_simulation = get_package_share_directory('polebot_amr_simulation')
+    pkg_polebot_bringup = get_package_share_directory('polebot_amr_bringup')
 
     # Create the launch configuration variables
     slam = LaunchConfiguration('slam')
@@ -92,7 +93,7 @@ def generate_launch_description():
     
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(pkg_polebot_description, 'config', 'polebot_amr_nav2_params.yaml'),
+        default_value=os.path.join(pkg_polebot_bringup, 'config', 'polebot_amr_nav2_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes',
     )
 

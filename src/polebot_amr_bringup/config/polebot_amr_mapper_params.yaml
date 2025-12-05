@@ -1,0 +1,45 @@
+# ROS Parameters for Real-Time SLAM (Autonics LSC LiDAR)
+slam_toolbox:
+  ros__parameters:
+
+    # Plugin
+    solver_plugin: "solver_plugins::CeresSolver"
+    ceres_linear_solver: "SPARSE_NORMAL_CHOLESKY"
+    ceres_preconditioner: "JACOBI"
+    ceres_trust_strategy: "LEVENBERG_MARQUARDT"
+    ceres_dogleg_type: "TRADITIONAL_DOGLEG"
+    ceres_loss_function: "None"
+
+    # Frame
+    odom_frame: "odom"
+    map_frame: "map"
+    base_frame: "base_link"
+    scan_topic: "/scan"  # ← must match your LiDAR topic
+
+    # Rate & Timing
+    publish_tf: true
+    publish_clock: false
+    transform_publish_period: 0.05  # 20 Hz
+    map_update_interval: 2.0        # seconds
+
+    # Laser
+    max_laser_range: 25.0
+    minimum_time_interval: 0.5
+    transform_timeout: 0.2
+    tf_buffer_duration: 30.0
+    stack_size_to_use: 40000000     # 40MB
+
+    # Correlation Scan Matcher
+    resolution: 0.05                # meters/pixel
+    max_scan_buffer_size: 10
+    scan_buffer_size: 10            # ← critical for "queue full" fix!
+    scan_buffer_maximum_scan_angle_difference: 0.3
+    scan_buffer_minimum_distance_between_scans: 0.5
+
+    # Debug
+    debug_logging: false
+    throttle_scans: 1
+    use_scan_matching: true
+    use_scan_barycenter: true
+    minimum_travel_distance: 0.5
+    minimum_travel_heading: 0.5

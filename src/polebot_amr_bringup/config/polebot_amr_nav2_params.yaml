@@ -42,6 +42,7 @@ bt_navigator:
   ros__parameters:
     global_frame: map
     robot_base_frame: base_link
+    transform_tolerance: 1.0
     odom_topic: /odom
     bt_loop_duration: 10
     default_server_timeout: 20
@@ -124,7 +125,7 @@ controller_server:
       wz_max: 1.9
       iteration_count: 1
       prune_distance: 1.7
-      transform_tolerance: 0.1
+      transform_tolerance: 1.0
       temperature: 0.3
       gamma: 0.015
       motion_model: "DiffDrive"
@@ -206,12 +207,12 @@ local_costmap:
       width: 3
       height: 3
       resolution: 0.05
-      footprint: "[ [0.47, 0.32], [0.47, -0.32], [-0.47, -0.32], [-0.47, 0.32] ]"
+      footprint: "[ [0.6, 0.4], [0.6, -0.4], [-0.6, -0.4], [-0.6, 0.4] ]"
       plugins: ["voxel_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.60
+        inflation_radius: 0.80
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
@@ -223,12 +224,6 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          # A relative topic will be appended to the parent of the local_costmap namespace.
-          # For example:
-          #   * User chosen namespace is `tb4`.
-          #   * User chosen topic is `scan`.
-          #   * Topic will be remapped to `/tb4/scan` without `local_costmap`.
-          #   * Use global topic `/scan` if you do not wish the node namespace to apply
           topic: scan
           max_obstacle_height: 2.0
           clearing: True
@@ -251,21 +246,14 @@ global_costmap:
       global_frame: odom
       robot_base_frame: base_link
       rolling_window: true
-      # Increase global costmap coverage so goals are within bounds
-      width: 20
-      height: 20
+      width: 40
+      height: 40
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
         observation_sources: scan
         scan:
-          # A relative topic will be appended to the parent of the global_costmap namespace.
-          # For example:
-          #   * User chosen namespace is `tb4`.
-          #   * User chosen topic is `scan`.
-          #   * Topic will be remapped to `/tb4/scan` without `global_costmap`.
-          #   * Use global topic `/scan` if you do not wish the node namespace to apply
           topic: scan
           max_obstacle_height: 2.0
           clearing: True
@@ -283,13 +271,6 @@ global_costmap:
         cost_scaling_factor: 3.0
         inflation_radius: 0.60
       always_send_full_costmap: True
-
-# The yaml_filename does not need to be specified since it going to be set by defaults in launch.
-# If you'd rather set it in the yaml, remove the default "map" value in the tb3_simulation_launch.py
-# file & provide full path to map below. If CLI map configuration or launch default is provided, that will be used.
-# map_server:
-#   ros__parameters:
-#     yaml_filename: ""
 
 map_saver:
   ros__parameters:
@@ -350,7 +331,7 @@ waypoint_follower:
   ros__parameters:
     loop_rate: 20
     stop_on_failure: false
-    action_server_result_timeout: 900.0
+    action_server_result_timeout: 1000.0
     waypoint_task_executor_plugin: "wait_at_waypoint"
     wait_at_waypoint:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
@@ -406,13 +387,13 @@ collision_monitor:
 
 docking_server:
   ros__parameters:
-    controller_frequency: 50.0
+    controller_frequency: 20.0
     initial_perception_timeout: 5.0
     wait_charge_timeout: 5.0
     dock_approach_timeout: 30.0
     undock_linear_tolerance: 0.05
     undock_angular_tolerance: 0.1
-    max_retries: 3
+    max_retries: 5
     base_frame: "base_link"
     fixed_frame: "odom"
     dock_backwards: false
@@ -438,11 +419,11 @@ docking_server:
 
     # Dock instances
     # The following example illustrates configuring dock instances.
-    # docks: ['home_dock']  # Input your docks here
-    # home_dock:
-    #   type: 'simple_charging_dock'
-    #   frame: map
-    #   pose: [0.0, 0.0, 0.0]
+    docks: ['home_dock']  # Input your docks here
+    home_dock:
+      type: 'simple_charging_dock'
+      frame: map
+      pose: [-7.5, 6.5, 0.0]
 
     controller:
       k_phi: 3.0
@@ -462,6 +443,6 @@ loopback_simulator:
     base_frame_id: "base_footprint"
     odom_frame_id: "odom"
     map_frame_id: "map"
-    scan_frame_id: "base_scan"  # tb4_loopback_simulator.launch.py remaps to 'rplidar_link'
+    scan_frame_id: "base_scan"
     update_duration: 0.02
     enable_stamped_cmd_vel: false

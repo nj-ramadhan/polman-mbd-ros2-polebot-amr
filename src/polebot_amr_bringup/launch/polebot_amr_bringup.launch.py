@@ -16,12 +16,12 @@ def generate_launch_description():
 
     # Config file path
     nav2_params_file = PathJoinSubstitution([
-        pkg_polebot_description, 'config', 'polebot_amr_nav2_params.yaml'
+        pkg_polebot_bringup, 'config', 'polebot_amr_nav2_params.yaml'
     ])
 
     # Use the joystick params shipped with the robot description package
     joy_params_file = PathJoinSubstitution([
-        pkg_polebot_description, 'config', 'polebot_amr_joystick_params.yaml'
+        pkg_polebot_bringup, 'config', 'polebot_amr_joystick_params.yaml'
     ])
 
     joy_node = Node(
@@ -60,7 +60,7 @@ def generate_launch_description():
         # 1. Robot simulation (Gazebo + RViz)
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                PathJoinSubstitution([pkg_polebot_description, 'launch', 'polebot_amr_display.launch.py'])
+                PathJoinSubstitution([pkg_polebot_description, 'launch', 'polebot_amr_rviz.launch.py'])
             )
         ),
 

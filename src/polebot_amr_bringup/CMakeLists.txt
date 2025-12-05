@@ -32,4 +32,21 @@ install(
   DESTINATION share/${PROJECT_NAME}/
 )
 
+install(
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+install(
+  PROGRAMS src/${PROJECT_NAME}/fake_odom_publisher.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME fake_odom_publisher
+)
+
+install(
+  PROGRAMS src/${PROJECT_NAME}/lidar_to_csv.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME lidar_to_csv
+)
+
 ament_package()
