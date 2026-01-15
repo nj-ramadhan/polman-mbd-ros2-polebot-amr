@@ -1,6 +1,6 @@
 <template>
   <div class="app-layout">
-    <!-- Sidebar Navigation -->
+    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
         <h2>NAV2 Controller</h2>
@@ -41,7 +41,7 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
-      <!-- Top Navigation Bar -->
+      <!-- Navbar -->
       <div class="navbar">
         <div class="navbar-left">
           <button class="menu-toggle" @click="toggleSidebar">
@@ -57,16 +57,15 @@
         </div>
       </div>
 
-      <!-- Page Content -->
+      <!-- Content Area -->
       <div class="content-area">
+        <!-- Your existing NAV2 Map Controller content goes here -->
         <div class="nav2-map-controller">
-          <!-- Header Section -->
           <div class="header-section">
             <h1>NAV2 Map Controller</h1>
             <p class="subtitle">Advanced Navigation System with Coordinate Management</p>
           </div>
 
-          <!-- Connection Status -->
           <div :class="['status', connectionStatus.class]">
             <div class="status-content">
               <span class="status-icon"><i :class="connectionStatus.icon"></i></span>
@@ -74,9 +73,8 @@
             </div>
           </div>
 
-          <!-- Main Layout: Map + Controls -->
           <div class="main-layout">
-            <!-- Left Panel - Map Visualization -->
+            <!-- Left Panel - Map -->
             <div class="map-section">
               <div class="panel-header">
                 <div class="panel-title">
@@ -85,7 +83,8 @@
                 </div>
                 <div class="map-controls">
                   <button @click="setAddGoalMode" :class="{ active: interactionMode === 'addGoal' }" class="mode-btn">
-                    <span class="btn-icon"><i :class="interactionMode === 'addGoal' ? 'fas fa-check' : 'fas fa-bullseye'"></i></span>
+                    <span class="btn-icon"><i
+                        :class="interactionMode === 'addGoal' ? 'fas fa-check' : 'fas fa-bullseye'"></i></span>
                     <span class="btn-text">Add Goal</span>
                   </button>
                   <button @click="setViewMode" :class="{ active: interactionMode === 'view' }" class="mode-btn">
@@ -99,30 +98,20 @@
                 </div>
               </div>
 
-              <!-- Interactive Map Canvas -->
               <div class="map-container">
-                <canvas ref="mapCanvas" 
-                        :width="canvasSize.width" 
-                        :height="canvasSize.height" 
-                        :style="getCanvasStyle()"
-                        @click="handleMapClick">
-                </canvas>
+                <canvas ref="mapCanvas" :width="canvasSize.width" :height="canvasSize.height" :style="{
+                  width: (canvasSize.width * 2 * offset.scale) + 'px',
+                  height: (canvasSize.height * 2 * offset.scale) + 'px',
+                  cursor: interactionMode === 'addGoal' ? 'crosshair' : 'default'
+                }" @click="handleMapClick"></canvas>
 
-                <!-- Goal Markers Overlay -->
-                <div v-for="(goal, index) in goals" 
-                     :key="index" 
-                     class="goal-indicator" 
-                     :style="getGoalIndicatorStyle(goal)"
-                     @click="removeGoal(index)" 
-                     :title="getGoalTooltip(goal)">
+                <!-- Goal indicators -->
+                <div v-for="(goal, index) in goals" :key="index" class="goal-indicator"
+                  :style="getGoalIndicatorStyle(goal)" @click="removeGoal(index)" :title="getGoalTooltip(goal)">
                   <div class="goal-marker">{{ index + 1 }}</div>
-                  <div class="goal-coord-display">
-                    Web: ({{ goal.x.toFixed(1) }}, {{ goal.y.toFixed(1) }})<br>
-                    RViz: ({{ getGoalForRViz(goal).x.toFixed(1) }}, {{ getGoalForRViz(goal).y.toFixed(1) }})
-                  </div>
                 </div>
 
-                <!-- Coordinate Axes Reference -->
+                <!-- Coordinate axes for reference -->
                 <div class="coordinate-axes">
                   <div class="axis x-axis" :style="{ color: flipXCoordinate ? '#ff6b6b' : '#a8e6cf' }">
                     {{ flipXCoordinate ? '← X+ (Web) → X- (RViz)' : '→ X+ (Same)' }}
@@ -133,18 +122,20 @@
                 </div>
               </div>
 
-              <!-- Map Information Panel -->
               <div class="map-info">
                 <div class="info-grid">
                   <div class="info-item">
                     <span class="info-label">Mode:</span>
-                    <span class="info-value">{{ interactionMode === 'addGoal' ? 'Click map to add goals' : 'View only' }}</span>
+                    <span class="info-value">{{ interactionMode === 'addGoal' ? 'Click map to add goals' : 'View only'
+                    }}</span>
                   </div>
                   <div class="info-item">
                     <span class="info-label">Coordinate Flip:</span>
                     <span class="info-value">
-                      X: <span :class="flipXCoordinate ? 'flip-active' : 'flip-inactive'">{{ flipXCoordinate ? 'FLIPPED' : 'Normal' }}</span>,
-                      Y: <span :class="flipYCoordinate ? 'flip-active' : 'flip-inactive'">{{ flipYCoordinate ? 'FLIPPED' : 'Normal' }}</span>
+                      X: <span :class="flipXCoordinate ? 'flip-active' : 'flip-inactive'">{{ flipXCoordinate ? 'FLIPPED'
+                        : 'Normal' }}</span>,
+                      Y: <span :class="flipYCoordinate ? 'flip-active' : 'flip-inactive'">{{ flipYCoordinate ? 'FLIPPED'
+                        : 'Normal' }}</span>
                     </span>
                   </div>
                   <div class="info-item">
@@ -152,9 +143,14 @@
                     <span class="info-value">{{ getFlipEffectDescription() }}</span>
                   </div>
                   <div class="info-item">
+                    <span class="info-label">Offset:</span>
+                    <span class="info-value">X: {{ offset.x }}px, Y: {{ offset.y }}px</span>
+                  </div>
+                  <div class="info-item">
                     <span class="info-label">Last Click:</span>
                     <span class="info-value" v-if="lastClickPosition">
-                      Web ({{ lastClickPosition.mapX?.toFixed(2) || 'N/A' }}, {{ lastClickPosition.mapY?.toFixed(2) || 'N/A' }})
+                      Web ({{ lastClickPosition.mapX?.toFixed(2) || 'N/A' }}, {{ lastClickPosition.mapY?.toFixed(2) ||
+                        'N/A' }})
                       → RViz ({{ getGoalForRViz(lastClickPosition).x?.toFixed(2) || 'N/A' }}, {{
                         getGoalForRViz(lastClickPosition).y?.toFixed(2) || 'N/A' }})
                     </span>
@@ -164,9 +160,166 @@
               </div>
             </div>
 
-            <!-- Right Panel - Control Sections -->
+            <!-- Right Panel - Controls -->
             <div class="control-section">
-              <!-- Map Information Panel -->
+<!-- Save Map Configuration Panel -->
+              <div class="control-panel">
+                <div class="panel-header">
+                  <div class="panel-title">
+                    <span class="icon"><i class="fas fa-save"></i></span>
+                    <h3>Save Map Configuration</h3>
+                  </div>
+                </div>
+                
+                <div class="save-controls">
+                  <!-- Coordinate Flip Settings -->
+                  <div class="flip-settings">
+                    <h4>Coordinate Settings</h4>
+                    <div class="flip-controls">
+                      <label class="checkbox-label">
+                        <input 
+                          type="checkbox" 
+                          v-model="flipXCoordinate"
+                          class="checkbox-input"
+                        >
+                        <span class="checkmark"></span>
+                        <span class="checkbox-text">Flip X Coordinate (Web +X → RViz -X)</span>
+                      </label>
+                      
+                      <label class="checkbox-label">
+                        <input 
+                          type="checkbox" 
+                          v-model="flipYCoordinate"
+                          class="checkbox-input"
+                        >
+                        <span class="checkmark"></span>
+                        <span class="checkbox-text">Flip Y Coordinate (Web +Y → RViz -Y)</span>
+                      </label>
+                    </div>
+                    
+                    <div class="coordinate-preview">
+                      <div class="preview-title">Coordinate Preview:</div>
+                      <div class="preview-content">
+                        <div>Web: (1.0, 2.0) → RViz: ({{ flipXCoordinate ? '-1.0' : '1.0' }}, {{ flipYCoordinate ? '-2.0' : '2.0' }})</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Save Map Configuration -->
+                  <div class="save-config">
+                    <h4>Save Map Settings</h4>
+                    
+                    <div class="directory-info">
+                      <div class="info-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Using PoleBot directory: <code>~/polman-mbd-ros2-polebot-amr/src/polebot_amr_navigation/maps</code></span>
+                      </div>
+                    </div>
+                    
+                    <div class="input-group">
+                      <label class="input-label">
+                        <span class="label-text">Map Name:</span>
+                        <input 
+                          v-model="mapSaveName" 
+                          type="text" 
+                          placeholder="polebot_map" 
+                          class="input-field"
+                          :disabled="!isConnected || isSavingMap"
+                        >
+                        <div class="input-hint">File extensions (.yaml, .pgm) will be added automatically</div>
+                      </label>
+                    </div>
+                    
+                    <div class="input-group">
+                      <label class="input-label">
+                        <span class="label-text">Save Directory:</span>
+                        <input 
+                          v-model="mapSaveDirectory" 
+                          type="text" 
+                          class="input-field"
+                          :disabled="!isConnected || isSavingMap"
+                        >
+                        <div class="input-hint">Maps will be saved to PoleBot navigation directory</div>
+                      </label>
+                    </div>
+                    
+                    <div class="save-buttons">
+                      <button 
+                        @click="saveMapWithCorrectFormat" 
+                        :disabled="!isConnected || isSavingMap || !mapSaveName"
+                        class="save-btn primary"
+                      >
+                        <span class="btn-icon">
+                          <i v-if="isSavingMap" class="fas fa-spinner fa-spin"></i>
+                          <i v-else class="fas fa-save"></i>
+                        </span>
+                        <span class="btn-text">
+                          {{ isSavingMap ? 'Saving Map...' : 'Save Map' }}
+                        </span>
+                      </button>
+                      
+                      <button 
+                        @click="saveMapWithDialog" 
+                        :disabled="!isConnected || isSavingMap"
+                        class="save-btn secondary"
+                      >
+                        <span class="btn-icon"><i class="fas fa-folder-open"></i></span>
+                        <span class="btn-text">Save with Dialog</span>
+                      </button>
+
+                      <button 
+                        @click="quickSaveMap" 
+                        :disabled="!isConnected || isSavingMap"
+                        class="save-btn secondary"
+                      >
+                        <span class="btn-icon"><i class="fas fa-bolt"></i></span>
+                        <span class="btn-text">Quick Save</span>
+                      </button>
+
+                      <!-- Debug Button -->
+                      <button 
+                        @click="debugService" 
+                        :disabled="!isConnected"
+                        class="save-btn debug"
+                      >
+                        <span class="btn-icon"><i class="fas fa-bug"></i></span>
+                        <span class="btn-text">Debug Service</span>
+                      </button>
+                    </div>
+                    
+                    <!-- Service Info Display -->
+                    <div v-if="serviceInfo" class="service-info">
+                      <div class="info-title">Service Information:</div>
+                      <div class="info-content">
+                        <div><strong>Type:</strong> {{ serviceInfo.type }}</div>
+                        <div><strong>Available:</strong> {{ serviceInfo.available ? 'Yes' : 'No' }}</div>
+                        <div><strong>Request Format:</strong> {{ serviceInfo.requestType }}</div>
+                        <div><strong>Response Codes:</strong> {{ serviceInfo.responseType }}</div>
+                      </div>
+                    </div>
+                    
+                    <!-- Save Status Display -->
+                    <div v-if="lastSaveStatus" :class="['save-status', lastSaveStatus.type]">
+                      <span class="status-icon">
+                        <i :class="lastSaveStatus.icon"></i>
+                      </span>
+                      <span class="status-message">{{ lastSaveStatus.message }}</span>
+                    </div>
+
+                    <!-- Troubleshooting Tips -->
+                    <div v-if="lastSaveStatus && lastSaveStatus.type === 'error'" class="troubleshooting-tips">
+                      <div class="tips-title">Troubleshooting Tips:</div>
+                      <ul class="tips-list">
+                        <li>Ensure slam_toolbox node is running</li>
+                        <li>Check directory permissions</li>
+                        <li>Try simple map names without spaces</li>
+                        <li>Verify ROS2 bridge connection</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Map Information -->
               <div class="control-panel">
                 <div class="panel-header">
                   <div class="panel-title">
@@ -187,10 +340,23 @@
                     <span class="info-label">Origin:</span>
                     <span class="info-value">({{ mapInfo?.origin?.x || 0 }}, {{ mapInfo?.origin?.y || 0 }})</span>
                   </div>
+                  <div class="info-item">
+                    <span class="info-label">Coordinate Flip:</span>
+                    <span class="info-value">
+                      X: <span :class="flipXCoordinate ? 'flip-active' : 'flip-inactive'">{{ flipXCoordinate ? 'ON' :
+                        'OFF' }}</span>,
+                      Y: <span :class="flipYCoordinate ? 'flip-active' : 'flip-inactive'">{{ flipYCoordinate ? 'ON' :
+                        'OFF' }}</span>
+                    </span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Effect:</span>
+                    <span class="info-value">{{ getFlipEffectDescription() }}</span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Goals List Panel -->
+              <!-- Goals List -->
               <div class="control-panel">
                 <div class="panel-header">
                   <div class="panel-title">
@@ -226,8 +392,8 @@
                   </div>
                 </div>
               </div>
-              
-              <!-- Mission Control Panel -->
+
+              <!-- Mission Controls -->
               <div class="control-panel">
                 <div class="panel-header">
                   <div class="panel-title">
@@ -235,8 +401,8 @@
                     <h3>Mission Control</h3>
                   </div>
                 </div>
-                
-                <!-- Mission Status Display -->
+
+                <!-- Mission status info -->
                 <div class="mission-info" v-if="missionActive || missionStatus !== 'Ready'">
                   <div class="mission-state">
                     <strong>Status:</strong> {{ missionStatus }}
@@ -245,36 +411,37 @@
                     <strong>Progress:</strong> {{ currentMissionGoal }} / {{ goals.length }} goals completed
                   </div>
                 </div>
-                
-                <!-- Mission Control Buttons -->
+
                 <div class="mission-buttons">
-                  <button @click="startMission" 
-                          :disabled="!isConnected || goals.length === 0 || missionActive"
-                          class="mission-btn primary">
+                  <button @click="startMission" :disabled="!isConnected || goals.length === 0 || missionActive"
+                    class="mission-btn primary">
                     <span class="btn-icon"><i class="fas fa-rocket"></i></span>
                     <span class="btn-text">Start Sequential Mission</span>
                   </button>
-                  <button @click="cancelMission" 
-                          :disabled="!isConnected || !missionActive" 
-                          class="cancel-btn">
+                  <button @click="cancelMission" :disabled="!isConnected || !missionActive" class="cancel-btn">
                     <span class="btn-icon"><i class="fas fa-stop"></i></span>
                     <span class="btn-text">Cancel Mission</span>
                   </button>
                 </div>
-
-                <!-- Mission Progress Display -->
                 <div v-if="missionActive && goals[currentMissionGoal]" class="mission-status">
                   <div class="mission-progress">
                     <div class="progress-bar">
-                      <div class="progress-fill" :style="{ width: ((currentMissionGoal) / goals.length * 100) + '%' }"></div>
+                      <div class="progress-fill" :style="{ width: ((currentMissionGoal) / goals.length * 100) + '%' }">
+                      </div>
                     </div>
                     <div class="progress-text">Completed: {{ currentMissionGoal }} of {{ goals.length }} goals</div>
                     <div class="progress-text">Current: Goal {{ currentMissionGoal + 1 }}</div>
                   </div>
+                  <div class="mission-details">
+                    <p><strong>Current Goal:</strong> Web({{ goals[currentMissionGoal].x.toFixed(2) }}, {{
+                      goals[currentMissionGoal].y.toFixed(2) }})
+                      → RViz: ({{ getGoalForRViz(goals[currentMissionGoal]).x.toFixed(2) }}, {{
+                        getGoalForRViz(goals[currentMissionGoal]).y.toFixed(2) }})</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- Connection Control Panel -->
+              <!-- Connection Controls -->
               <div class="control-panel">
                 <div class="panel-header">
                   <div class="panel-title">
@@ -295,11 +462,8 @@
                 <div class="connection-settings">
                   <label class="input-label">
                     <span class="label-text">ROS Bridge:</span>
-                    <input v-model="rosBridgeUrl" 
-                           type="text" 
-                           placeholder="ws://localhost:9090" 
-                           :disabled="isConnected" 
-                           class="input-field" />
+                    <input v-model="rosBridgeUrl" type="text" placeholder="ws://localhost:9090" :disabled="isConnected"
+                      class="input-field" />
                   </label>
                 </div>
               </div>
@@ -318,88 +482,333 @@ export default {
   name: 'Nav2MapController',
   data() {
     return {
-      // UI State
       currentPageTitle: 'Map Controller',
-      
-      // ROS Connection State
       ros: null,
       isConnected: false,
       isMapSubscribed: false,
-      rosBridgeUrl: 'ws://localhost:9090',
-      connectionStatus: {
-        message: 'Disconnected',
-        class: 'disconnected',
-        icon: 'fas fa-circle'
-      },
+      rosBridgeUrl: 'ws://192.168.1.33:9090',
 
-      // Map Data
+      // Map data
       mapInfo: null,
       mapData: null,
       canvasSize: { width: 100, height: 100 },
 
-      // Coordinate Configuration
-      flipXCoordinate: false,  // Flip X axis for RViz coordinates
-      flipYCoordinate: false,  // Flip Y axis for RViz coordinates
+      // Coordinate flip - HANYA membalik koordinat yang dikirim ke RViz
+      flipXCoordinate: false,
+      flipYCoordinate: false,
+
+      // Offset system
+      showOffsetPanel: false,
       offset: { x: 0, y: 0, scale: 1.0 },
 
-      // User Interaction
+      // Interaction
       interactionMode: 'addGoal',
+      currentClickPosition: null,
+      previousClickPosition: null,
       lastClickPosition: null,
 
-      // Goals Management
+      // Goals
       goals: [],
 
-      // Mission Control
+      // Mission control
       missionActive: false,
       currentMissionGoal: 0,
       missionStatus: 'Ready',
 
-      // Navigation State
+      // Navigation status tracking
       navigationStatus: {
         status: 'Idle',
         isActive: false,
         currentGoal: null
       },
 
-      // ROS Topics
+      // Map Save Configuration - TAMBAHAN BARU
+      mapSaveName: '',
+      mapSaveDirectory: '~/polman-mbd-ros2-polebot-amr/src/polebot_amr_navigation/maps',
+      isSavingMap: false,
+      lastSaveStatus: null,
+      serviceInfo: null,
+
+      // ROS objects
       mapTopic: null,
       goalTopic: null,
+
+      // Navigation monitoring topics
       navStatusTopic: null,
       btLogTopic: null,
       rosoutTopic: null,
       rosoutSubscription: null,
-      goalCompletionTimeout: null
+      goalCompletionTimeout: null,
+
+      connectionStatus: {
+        message: 'Disconnected',
+        class: 'disconnected',
+        icon: 'fas fa-circle'
+      }
     };
   },
 
   mounted() {
     this.connectROS();
+    this.mapSaveName = `polebot_map_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_${this.getTimeStamp()}`;
   },
 
   methods: {
-    // ==================== UI METHODS ====================
-    
     toggleSidebar() {
       const sidebar = document.querySelector('.sidebar');
       sidebar.classList.toggle('collapsed');
     },
 
-    setAddGoalMode() {
-      this.interactionMode = 'addGoal';
+    // ==================== MAP SAVE FUNCTIONALITY ====================
+
+    getTimeStamp() {
+      const now = new Date();
+      return `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
     },
 
-    setViewMode() {
-      this.interactionMode = 'view';
-    },
-
-    // ==================== MAP RENDERING ====================
-    
     /**
-     * Renders occupancy grid map to canvas
-     * - Unknown areas: Gray (128)
-     * - Free space: White (255) 
-     * - Occupied: Black (0)
+     * ✅ CORRECTED - Menggunakan std_msgs/String untuk field name
      */
+    async saveMapWithCorrectFormat() {
+      if (!this.isConnected || this.isSavingMap) {
+        console.warn('Cannot save map: ROS not connected or already saving');
+        return;
+      }
+
+      this.isSavingMap = true;
+      this.lastSaveStatus = {
+        type: 'info',
+        icon: 'fas fa-info-circle',
+        message: 'Saving map with std_msgs/String format...'
+      };
+
+      try {
+        // Validate inputs
+        if (!this.mapSaveName || this.mapSaveName.trim() === '') {
+          throw new Error('Map name cannot be empty');
+        }
+
+        const mapPath = this.constructMapPath();
+        console.log(`Saving map to: ${mapPath}`);
+
+        // ✅ CORRECT SERVICE TYPE dengan format yang benar
+        const result = await this.saveMapWithStdMsgsFormat(mapPath);
+
+        this.handleSaveSuccess(mapPath);
+
+      } catch (error) {
+        this.handleSaveError(error);
+      } finally {
+        this.isSavingMap = false;
+      }
+    },
+
+    /**
+     * ✅ CORRECT - Menggunakan std_msgs/String untuk field name
+     */
+    saveMapWithStdMsgsFormat(mapPath) {
+      return new Promise((resolve, reject) => {
+        // ✅ CORRECT SERVICE TYPE
+        const saveMapService = new ROSLIB.Service({
+          ros: this.ros,
+          name: '/slam_toolbox/save_map',
+          serviceType: 'slam_toolbox/srv/SaveMap'
+        });
+
+        // ✅ CORRECT REQUEST FORMAT: menggunakan std_msgs/String
+        const request = new ROSLIB.ServiceRequest({
+          name: new ROSLIB.Message({
+            data: mapPath  // ✅ std_msgs/String format
+          })
+        });
+
+        console.log('✅ Service Request (std_msgs/String):', request);
+
+        saveMapService.callService(request, (result) => {
+          console.log('✅ Service Result:', result);
+          if (result !== undefined && result !== null) {
+            // Check result code based on interface
+            if (result.result === 0) {
+              resolve(result);
+            } else if (result.result === 1) {
+              reject(new Error('No map received - slam_toolbox might not be mapping'));
+            } else if (result.result === 255) {
+              reject(new Error('Undefined failure occurred'));
+            } else {
+              resolve(result); // Unknown result code but not an error
+            }
+          } else {
+            reject(new Error('Service returned undefined result'));
+          }
+        }, (error) => {
+          console.error('❌ Service Error:', error);
+          reject(error);
+        });
+      });
+    },
+
+    constructMapPath() {
+      let mapPath = this.mapSaveName.trim();
+
+      // Remove extensions if present
+      mapPath = mapPath.replace(/\.(yaml|pgm|png)$/i, '');
+
+      // Gunakan directory yang sudah ditentukan
+      let directory = this.mapSaveDirectory.trim();
+
+      // Clean directory path
+      if (directory.endsWith('/')) {
+        directory = directory.slice(0, -1);
+      }
+
+      mapPath = `${directory}/${mapPath}`;
+
+      console.log('Final map path:', mapPath);
+      return mapPath;
+    },
+
+    handleSaveSuccess(mapPath) {
+      this.lastSaveStatus = {
+        type: 'success',
+        icon: 'fas fa-check-circle',
+        message: `✅ Map saved successfully to: ${mapPath}`
+      };
+
+      console.log('Map saved successfully:', mapPath);
+
+      setTimeout(() => {
+        if (this.lastSaveStatus?.type === 'success') {
+          this.lastSaveStatus = null;
+        }
+      }, 8000);
+    },
+
+    handleSaveError(error) {
+      let errorMessage = 'Unknown error occurred';
+      let showTroubleshooting = false;
+
+      if (error.message.includes('FieldTypeMismatchException')) {
+        errorMessage = 'Field type mismatch. Using std_msgs/String format...';
+        // Auto-retry dengan format yang benar
+        setTimeout(() => {
+          const mapPath = this.constructMapPath();
+          this.saveMapWithStdMsgsFormat(mapPath)
+            .then(() => this.handleSaveSuccess(mapPath))
+            .catch((retryError) => {
+              this.lastSaveStatus = {
+                type: 'error',
+                icon: 'fas fa-exclamation-circle',
+                message: `❌ Retry failed: ${retryError.message}`
+              };
+            });
+        }, 2000);
+        return;
+      } else if (error.message.includes('No such file or directory')) {
+        errorMessage = 'Directory not found. Please check the path.';
+        showTroubleshooting = true;
+      } else if (error.message.includes('Permission denied')) {
+        errorMessage = 'Permission denied. Check directory permissions.';
+        showTroubleshooting = true;
+      } else if (error.message.includes('Service not found')) {
+        errorMessage = 'Save map service not found. Check if slam_toolbox is running.';
+        showTroubleshooting = true;
+      } else if (error.message.includes('No map received')) {
+        errorMessage = 'No map data received. Is slam_toolbox actively mapping?';
+        showTroubleshooting = true;
+      } else if (error.message.includes('Undefined failure')) {
+        errorMessage = 'Undefined failure occurred. Check slam_toolbox logs.';
+        showTroubleshooting = true;
+      } else {
+        errorMessage = `Save failed: ${error.message}`;
+        showTroubleshooting = true;
+      }
+
+      this.lastSaveStatus = {
+        type: 'error',
+        icon: 'fas fa-exclamation-circle',
+        message: `❌ ${errorMessage}`,
+        showTroubleshooting: showTroubleshooting
+      };
+
+      console.error('Map save error:', error);
+    },
+
+    saveMapWithDialog() {
+      const suggestedName = `polebot_map_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}`;
+      const mapName = prompt('Enter map name:', this.mapSaveName || suggestedName);
+
+      if (mapName === null) return;
+
+      if (!mapName.trim()) {
+        alert('Map name cannot be empty!');
+        return;
+      }
+
+      this.mapSaveName = mapName.trim();
+      this.saveMapWithCorrectFormat();
+    },
+
+    quickSaveMap() {
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+      this.mapSaveName = `polebot_quick_${timestamp}`;
+      this.saveMapWithCorrectFormat();
+    },
+
+    /**
+     * ✅ ENHANCED DEBUG untuk melihat service yang sebenarnya
+     */
+    async debugService() {
+      if (!this.ros) {
+        console.error('ROS not connected');
+        return;
+      }
+
+      this.lastSaveStatus = {
+        type: 'info',
+        icon: 'fas fa-info-circle',
+        message: 'Debugging service with actual interface...'
+      };
+
+      try {
+        // Get all services
+        const services = await new Promise((resolve, reject) => {
+          this.ros.getServices((services) => {
+            resolve(services);
+          }, (error) => {
+            reject(error);
+          });
+        });
+
+        console.log('Available services:', services);
+
+        const saveMapAvailable = services.includes('/slam_toolbox/save_map');
+
+        // Update service info berdasarkan interface yang sebenarnya
+        this.serviceInfo = {
+          available: saveMapAvailable,
+          type: 'slam_toolbox/srv/SaveMap',
+          requestType: 'std_msgs/String name',
+          responseType: 'uint8 result (0=SUCCESS, 1=NO_MAP_RECEIVED, 255=UNDEFINED_FAILURE)',
+          details: 'Requires std_msgs/String for name field'
+        };
+
+        this.lastSaveStatus = {
+          type: 'success',
+          icon: 'fas fa-check-circle',
+          message: `✅ Debug complete. Service available: ${saveMapAvailable}`
+        };
+
+      } catch (error) {
+        console.error('Debug error:', error);
+        this.lastSaveStatus = {
+          type: 'error',
+          icon: 'fas fa-exclamation-circle',
+          message: `❌ Debug failed: ${error.message}`
+        };
+      }
+    },
+
+    // MAP RENDERING - TIDAK BERUBAH, canvas tetap normal
     renderMapToCanvas(mapData) {
       const canvas = this.$refs.mapCanvas;
       if (!canvas) return;
@@ -410,12 +819,13 @@ export default {
       const data = mapData.data;
 
       ctx.clearRect(0, 0, width, height);
+
       const imageData = ctx.createImageData(width, height);
 
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
           const index = y * width + x;
-          const pixelIndex = index * 4;
+          const pixelIndex = (y * width + x) * 4;
           const cellValue = data[index];
 
           let r, g, b;
@@ -437,14 +847,10 @@ export default {
       }
 
       ctx.putImageData(imageData, 0, 0);
+      console.log(`🗺️ Map rendered: ${width}x${height} [X-Flip: ${this.flipXCoordinate ? 'ON' : 'OFF'}, Y-Flip: ${this.flipYCoordinate ? 'ON' : 'OFF'}]`);
     },
 
-    // ==================== COORDINATE CONVERSION ====================
-    
-    /**
-     * Converts pixel coordinates to map world coordinates
-     * Applies offset and scale adjustments
-     */
+    // COORDINATE CONVERSION - Tetap normal untuk canvas
     pixelToMapCoordinates(px, py) {
       if (!this.mapData || !this.mapInfo) return null;
 
@@ -457,13 +863,11 @@ export default {
       const mapX = origin.x + (adjustedPx * resolution);
       const mapY = origin.y + (adjustedPy * resolution);
 
+      console.log(`🔍 Pixel→Map: Raw(${px}, ${py}) → Adjusted(${adjustedPx.toFixed(1)}, ${adjustedPy.toFixed(1)}) → World(${mapX.toFixed(3)}, ${mapY.toFixed(3)})`);
+
       return { mapX, mapY };
     },
 
-    /**
-     * Converts map world coordinates to pixel coordinates
-     * Used for displaying goal markers on canvas
-     */
     calculatePixelCoordinates(mapX, mapY) {
       if (!this.mapData || !this.mapInfo) return { px: 0, py: 0 };
 
@@ -478,17 +882,15 @@ export default {
       const pixelX = Math.round(continuousX * this.offset.scale + this.offset.x);
       const pixelY = Math.round(continuousY * this.offset.scale + this.offset.y);
 
-      return {
+      const result = {
         px: Math.max(0, Math.min(pixelX, width - 1)),
         py: Math.max(0, Math.min(pixelY, height - 1))
       };
+
+      return result;
     },
 
-    /**
-     * Applies coordinate flip transformations for RViz
-     * - flipXCoordinate: Web +X → RViz -X
-     * - flipYCoordinate: Web +Y → RViz -Y
-     */
+    // METHOD BARU: Mendapatkan koordinat untuk dikirim ke RViz (dengan flip X dan Y jika aktif)
     getGoalForRViz(goal) {
       if (!goal) return { x: 0, y: 0 };
 
@@ -498,9 +900,14 @@ export default {
       if (this.flipXCoordinate) rvizX = -goal.x;
       if (this.flipYCoordinate) rvizY = -goal.y;
 
-      return { x: rvizX, y: rvizY, timestamp: goal.timestamp || Date.now() };
+      return {
+        x: rvizX,
+        y: rvizY,
+        timestamp: goal.timestamp || Date.now()
+      };
     },
 
+    // Method untuk mendapatkan deskripsi efek flip
     getFlipEffectDescription() {
       if (!this.flipXCoordinate && !this.flipYCoordinate) {
         return 'Web and RViz coordinates match';
@@ -513,8 +920,94 @@ export default {
       }
     },
 
-    // ==================== GOALS MANAGEMENT ====================
-    
+    // Method untuk tooltip goal
+    getGoalTooltip(goal) {
+      if (!goal) return 'Goal: No data';
+
+      const rvizGoal = this.getGoalForRViz(goal);
+      const goalIndex = this.goals.indexOf(goal);
+      return `Goal ${goalIndex >= 0 ? goalIndex + 1 : 'Unknown'}: Web(${goal.x.toFixed(2)}, ${goal.y.toFixed(2)}) → RViz(${rvizGoal.x.toFixed(2)}, ${rvizGoal.y.toFixed(2)})`;
+    },
+
+    // Format timestamp untuk display
+    formatTimestamp(timestamp) {
+      if (!timestamp) return '';
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString();
+    },
+
+    // Coordinate debugging methods
+    testCoordinateFlip() {
+      console.log('🧪 COORDINATE FLIP TEST:');
+      console.log(`- X-Flip: ${this.flipXCoordinate ? 'ON (Web +X → RViz -X)' : 'OFF (Same X)'}`);
+      console.log(`- Y-Flip: ${this.flipYCoordinate ? 'ON (Web +Y → RViz -Y)' : 'OFF (Same Y)'}`);
+
+      const testGoals = [
+        { name: 'Quadrant 1 (++,++)', x: 2.0, y: 2.0 },
+        { name: 'Quadrant 2 (-+,+-)', x: -2.0, y: 2.0 },
+        { name: 'Quadrant 3 (--,--)', x: -2.0, y: -2.0 },
+        { name: 'Quadrant 4 (+-,-+)', x: 2.0, y: -2.0 }
+      ];
+
+      testGoals.forEach(goal => {
+        const rvizGoal = this.getGoalForRViz(goal);
+        console.log(`- ${goal.name}: Web(${goal.x}, ${goal.y}) → RViz(${rvizGoal.x}, ${rvizGoal.y})`);
+      });
+
+      this.updateStatus('🧪 Coordinate flip test completed - check console', 'connected', 'fas fa-check-circle');
+    },
+
+    // Test goals untuk semua quadrant
+    addTestGoalQuadrant1() { this.addTestGoal(2.0, 2.0, 'Quadrant 1 (++,++)'); },
+    addTestGoalQuadrant2() { this.addTestGoal(-2.0, 2.0, 'Quadrant 2 (-+,+-)'); },
+    addTestGoalQuadrant3() { this.addTestGoal(-2.0, -2.0, 'Quadrant 3 (--,--)'); },
+    addTestGoalQuadrant4() { this.addTestGoal(2.0, -2.0, 'Quadrant 4 (+-,-+)'); },
+
+    addTestGoal(x, y, description) {
+      this.addGoal(x, y);
+      const rvizCoords = this.getGoalForRViz({ x, y });
+      console.log(`🎯 Added ${description}: Web(${x.toFixed(2)}, ${y.toFixed(2)}) → RViz(${rvizCoords.x.toFixed(2)}, ${rvizCoords.y.toFixed(2)})`);
+    },
+
+    // Offset management methods
+    applyOffsetPreset(preset) {
+      const presets = {
+        flip_x_only: { x: 0, y: 0, scale: 1.0 },
+        flip_y_only: { x: 0, y: 0, scale: 1.0 },
+        flip_both: { x: 0, y: 0, scale: 1.0 },
+        small: { x: 5, y: 5, scale: 1.0 },
+        medium: { x: 15, y: 15, scale: 1.0 }
+      };
+
+      if (preset === 'flip_x_only') {
+        this.flipXCoordinate = !this.flipXCoordinate;
+        this.updateStatus(`🎛️ X Coordinate Flip: ${this.flipXCoordinate ? 'ON (Web +X → RViz -X)' : 'OFF (Same X)'}`, 'connected', 'fas fa-sync-alt');
+      } else if (preset === 'flip_y_only') {
+        this.flipYCoordinate = !this.flipYCoordinate;
+        this.updateStatus(`🎛️ Y Coordinate Flip: ${this.flipYCoordinate ? 'ON (Web +Y → RViz -Y)' : 'OFF (Same Y)'}`, 'connected', 'fas fa-sync-alt');
+      } else if (preset === 'flip_both') {
+        this.flipXCoordinate = !this.flipXCoordinate;
+        this.flipYCoordinate = !this.flipYCoordinate;
+        this.updateStatus(`🎛️ Both Coordinates Flipped: X=${this.flipXCoordinate ? 'ON' : 'OFF'}, Y=${this.flipYCoordinate ? 'ON' : 'OFF'}`, 'connected', 'fas fa-sync-alt');
+      } else if (presets[preset]) {
+        this.offset = { ...this.offset, ...presets[preset] };
+        this.updateStatus(`🎛️ Applied ${preset} offset preset`, 'connected', 'fas fa-cog');
+      }
+      this.rerenderGoals();
+    },
+
+    resetAllOffsets() {
+      this.offset = { x: 0, y: 0, scale: 1.0 };
+      this.flipXCoordinate = false;
+      this.flipYCoordinate = false;
+      this.updateStatus('🎛️ All offsets and coordinate flips reset', 'connected', 'fas fa-sync-alt');
+      this.rerenderGoals();
+    },
+
+    rerenderGoals() {
+      if (this.mapData) this.renderMapToCanvas(this.mapData);
+    },
+
     handleMapClick(event) {
       if (this.interactionMode !== 'addGoal' || !this.mapData || !this.mapInfo) return;
 
@@ -531,42 +1024,30 @@ export default {
       const mapCoords = this.pixelToMapCoordinates(pixelX, pixelY);
       if (!mapCoords) return;
 
+      this.previousClickPosition = this.currentClickPosition;
       this.lastClickPosition = {
-        pixelX, pixelY,
+        pixelX: pixelX,
+        pixelY: pixelY,
         mapX: mapCoords.mapX,
         mapY: mapCoords.mapY
       };
 
+      this.currentClickPosition = this.lastClickPosition;
       this.addGoal(mapCoords.mapX, mapCoords.mapY);
+
+      const rvizCoords = this.getGoalForRViz({ x: mapCoords.mapX, y: mapCoords.mapY });
+      console.log(`🎯 Added goal: Web(${mapCoords.mapX.toFixed(2)}, ${mapCoords.mapY.toFixed(2)}) → RViz(${rvizCoords.x.toFixed(2)}, ${rvizCoords.y.toFixed(2)})`);
     },
 
-    addGoal(x, y) {
-      if (x === undefined || y === undefined) return;
-
-      this.goals.push({ x, y, timestamp: Date.now() });
-    },
-
-    removeGoal(index) {
-      if (this.missionActive && index === this.currentMissionGoal) {
-        this.cancelMission();
-      }
-      this.goals.splice(index, 1);
-    },
-
-    clearAllGoals() {
-      if (this.missionActive) this.cancelMission();
-      this.goals = [];
-    },
-
-    // ==================== MISSION CONTROL ====================
-    
+    // ========== SEQUENTIAL MISSION CONTROL METHODS ==========
     startMission() {
       if (!this.isConnected || this.goals.length === 0 || this.missionActive) return;
 
       this.missionActive = true;
       this.currentMissionGoal = 0;
       this.missionStatus = 'Mission Started';
-      
+
+      this.updateStatus('🚀 Mission started with ' + this.goals.length + ' goals', 'connected', 'fas fa-rocket');
       this.executeCurrentGoal();
     },
 
@@ -577,39 +1058,62 @@ export default {
       }
 
       const goal = this.goals[this.currentMissionGoal];
+      this.navigationStatus = {
+        status: 'Navigating to Goal ' + (this.currentMissionGoal + 1),
+        isActive: true,
+        currentGoal: goal
+      };
+
       this.missionStatus = `Executing Goal ${this.currentMissionGoal + 1}/${this.goals.length}`;
-      
+      console.log(`🎯 Starting Goal ${this.currentMissionGoal + 1}/${this.goals.length}`);
+
       this.sendGoalViaTopic(goal);
     },
 
+    // Send goal via traditional topic dengan perbaikan offset
     sendGoalViaTopic(goal) {
       if (!this.isConnected || !goal) return;
 
       const rvizGoal = this.getGoalForRViz(goal);
       let adjustedX = rvizGoal.x;
 
-      // Apply dynamic offset based on mission progression
       if (this.currentMissionGoal > 0) {
         const previousGoal = this.goals[this.currentMissionGoal - 1];
         const currentGoal = goal;
 
+        console.log(`🔍 Mission Goal Comparison: Previous=${previousGoal.x.toFixed(2)}, Current=${currentGoal.x.toFixed(2)}`);
+
         if (currentGoal.x < previousGoal.x) {
-          adjustedX = rvizGoal.x + 0.3; // X decreased - add small offset
+          adjustedX = rvizGoal.x + 0.3;
+          console.log(`➖ X decreased in mission: ${rvizGoal.x.toFixed(2)} → ${adjustedX.toFixed(2)}`);
         } else if (currentGoal.x > previousGoal.x) {
-          adjustedX = rvizGoal.x + 0.7; // X increased - add larger offset
+          adjustedX = rvizGoal.x + 0.7;
+          console.log(`➕ X increased in mission: ${rvizGoal.x.toFixed(2)} → ${adjustedX.toFixed(2)}`);
+        } else {
+          console.log(`➡️ X unchanged in mission: ${adjustedX.toFixed(2)}`);
         }
+      } else {
+        console.log(`🔍 First mission goal, using original X: ${adjustedX.toFixed(2)}`);
       }
 
       const goalMessage = new ROSLIB.Message({
-        header: { stamp: { sec: 0, nanosec: 0 }, frame_id: 'map' },
+        header: {
+          stamp: { sec: 0, nanosec: 0 },
+          frame_id: 'map'
+        },
         pose: {
-          position: { x: adjustedX, y: rvizGoal.y, z: 0.0 },
+          position: {
+            x: adjustedX,
+            y: rvizGoal.y,
+            z: 0.0
+          },
           orientation: { x: 0.0, y: 0.0, z: 0.0, w: 1.0 }
         }
       });
 
       try {
         this.goalTopic.publish(goalMessage);
+        console.log(`📤 Mission Goal ${this.currentMissionGoal + 1} sent: Web(${goal.x.toFixed(2)}, ${goal.y.toFixed(2)}) → RViz(${adjustedX.toFixed(2)}, ${rvizGoal.y.toFixed(2)})`);
         this.startGoalCompletionMonitoring();
       } catch (error) {
         console.error('Error sending mission goal:', error);
@@ -617,10 +1121,12 @@ export default {
       }
     },
 
+    // Improved goal completion monitoring
     startGoalCompletionMonitoring() {
+      console.log(`🎯 Started monitoring for Goal ${this.currentMissionGoal + 1} completion`);
       this.stopGoalCompletionMonitoring();
 
-      // Monitor ROS logs for goal completion status
+      // Monitor rosout untuk goal success messages
       this.rosoutTopic = new ROSLIB.Topic({
         ros: this.ros,
         name: '/rosout',
@@ -630,58 +1136,187 @@ export default {
       this.rosoutSubscription = this.rosoutTopic.subscribe((msg) => {
         if (msg.name === 'bt_navigator' && msg.msg) {
           if (msg.msg.includes('Goal succeeded')) {
+            console.log('✅ Goal success detected from rosout');
             this.handleGoalSuccess();
           } else if (msg.msg.includes('Goal failed')) {
+            console.log('❌ Goal failure detected from rosout');
             this.handleGoalFailure();
           }
         }
       });
     },
 
+    // Stop monitoring for goal completion
     stopGoalCompletionMonitoring() {
       if (this.goalCompletionTimeout) {
         clearTimeout(this.goalCompletionTimeout);
         this.goalCompletionTimeout = null;
       }
-      
+
       if (this.rosoutSubscription) {
         this.rosoutSubscription.unsubscribe();
         this.rosoutSubscription = null;
       }
     },
 
+    // Handle goal success - HANYA pindah ke goal berikutnya
     handleGoalSuccess() {
       this.stopGoalCompletionMonitoring();
-      
+
       const completedGoal = this.currentMissionGoal;
+
+      this.navigationStatus = {
+        status: `Goal ${completedGoal + 1} Completed`,
+        isActive: false,
+        currentGoal: null
+      };
+
+      console.log(`✅ Goal ${completedGoal + 1} completed successfully`);
       this.currentMissionGoal++;
-      
+
+      this.updateStatus(`✅ Goal ${completedGoal + 1} completed, moving to next...`, 'connected', 'fas fa-check-circle');
+
       if (this.currentMissionGoal < this.goals.length) {
-        setTimeout(() => this.executeCurrentGoal(), 2000);
+        setTimeout(() => {
+          console.log(`🔄 Moving to Goal ${this.currentMissionGoal + 1}`);
+          this.executeCurrentGoal();
+        }, 2000);
       } else {
         this.completeMission();
       }
     },
 
+    // Handle goal failure  
     handleGoalFailure() {
       this.stopGoalCompletionMonitoring();
+
+      this.navigationStatus = {
+        status: `Goal ${this.currentMissionGoal + 1} Failed`,
+        isActive: false,
+        currentGoal: null
+      };
+
       this.missionStatus = `Failed at Goal ${this.currentMissionGoal + 1}`;
       this.missionActive = false;
+
+      this.updateStatus(`❌ Mission failed at goal ${this.currentMissionGoal + 1}`, 'error', 'fas fa-times-circle');
     },
 
+    // Complete mission
     completeMission() {
       this.missionActive = false;
+      this.navigationStatus = {
+        status: 'Mission Completed',
+        isActive: false,
+        currentGoal: null
+      };
       this.missionStatus = 'Mission Completed';
+
+      console.log('🎉 Mission completed successfully!');
+      this.updateStatus('🎉 All goals completed successfully!', 'connected', 'fas fa-trophy');
     },
 
     cancelMission() {
       this.stopGoalCompletionMonitoring();
+
       this.missionActive = false;
+      this.navigationStatus = {
+        status: 'Mission Cancelled',
+        isActive: false,
+        currentGoal: null
+      };
       this.missionStatus = 'Cancelled';
+
+      console.log('⏹️ Mission cancelled by user');
+      this.updateStatus('⏹️ Mission cancelled', 'connected', 'fas fa-stop-circle');
     },
 
-    // ==================== ROS INTEGRATION ====================
-    
+    // Single goal sending (legacy method) dengan perbaikan offset
+    sendSingleGoal(goal) {
+      if (!this.isConnected || !goal) return;
+
+      const rvizGoal = this.getGoalForRViz(goal);
+      let adjustedX = rvizGoal.x;
+
+      if (this.goals.length > 1) {
+        const goalIndex = this.goals.indexOf(goal);
+        if (goalIndex > 0) {
+          const previousGoal = this.goals[goalIndex - 1];
+          const currentGoal = goal;
+
+          console.log(`🔍 Single Goal Comparison: Previous=${previousGoal.x.toFixed(2)}, Current=${currentGoal.x.toFixed(2)}`);
+
+          if (currentGoal.x < previousGoal.x) {
+            adjustedX = rvizGoal.x + 0.3;
+            console.log(`➖ X decreased: ${rvizGoal.x.toFixed(2)} → ${adjustedX.toFixed(2)}`);
+          } else if (currentGoal.x > previousGoal.x) {
+            adjustedX = rvizGoal.x + 0.7;
+            console.log(`➕ X increased: ${rvizGoal.x.toFixed(2)} → ${adjustedX.toFixed(2)}`);
+          } else {
+            console.log(`➡️ X unchanged: ${adjustedX.toFixed(2)}`);
+          }
+        } else {
+          console.log(`🔍 First goal, using original X: ${adjustedX.toFixed(2)}`);
+        }
+      } else {
+        console.log(`🔍 Only one goal, using original X: ${adjustedX.toFixed(2)}`);
+      }
+
+      const goalMessage = new ROSLIB.Message({
+        header: {
+          stamp: { sec: 0, nanosec: 0 },
+          frame_id: 'map'
+        },
+        pose: {
+          position: { x: adjustedX, y: rvizGoal.y, z: 0.0 },
+          orientation: { x: 0.0, y: 0.0, z: 0.0, w: 1.0 }
+        }
+      });
+
+      try {
+        this.goalTopic.publish(goalMessage);
+        this.navigationStatus.status = 'Single Goal Sent';
+        this.navigationStatus.isActive = true;
+        console.log(`📤 Single goal sent: Web(${goal.x.toFixed(2)}, ${goal.y.toFixed(2)}) → RViz(${adjustedX.toFixed(2)}, ${rvizGoal.y.toFixed(2)})`);
+      } catch (error) {
+        console.error('Error sending goal:', error);
+      }
+    },
+
+    addGoal(x, y) {
+      if (x === undefined || y === undefined) {
+        console.error('❌ Invalid goal coordinates:', x, y);
+        return;
+      }
+
+      this.goals.push({
+        x: x,
+        y: y,
+        timestamp: Date.now()
+      });
+
+      const rvizCoords = this.getGoalForRViz({ x, y });
+      this.updateStatus(`🎯 Goal #${this.goals.length} added: Web(${x.toFixed(2)}, ${y.toFixed(2)}) → RViz(${rvizCoords.x.toFixed(2)}, ${rvizCoords.y.toFixed(2)})`, 'connected', 'fas fa-bullseye');
+    },
+
+    removeGoal(index) {
+      if (this.missionActive && index === this.currentMissionGoal) {
+        this.cancelMission();
+      }
+      this.goals.splice(index, 1);
+      this.updateStatus(`🗑️ Goal #${index + 1} removed`, 'connected', 'fas fa-trash');
+    },
+
+    clearAllGoals() {
+      if (this.missionActive) this.cancelMission();
+      this.goals = [];
+      this.updateStatus('🗑️ All goals cleared', 'connected', 'fas fa-trash');
+    },
+
+    setAddGoalMode() { this.interactionMode = 'addGoal'; },
+    setViewMode() { this.interactionMode = 'view'; },
+
+    // ROS Methods
     connectROS() {
       this.ros = new ROSLIB.Ros({ url: this.rosBridgeUrl });
 
@@ -704,7 +1339,6 @@ export default {
     },
 
     setupNav2Topics() {
-      // Goal publishing topic
       this.goalTopic = new ROSLIB.Topic({
         ros: this.ros,
         name: '/goal_pose',
@@ -725,54 +1359,81 @@ export default {
 
       this.mapTopic.subscribe(this.handleMapMessage);
       this.isMapSubscribed = true;
+      this.updateStatus('🗺️ Map subscribed', 'connected', 'fas fa-map');
     },
 
     handleMapMessage(mapData) {
+      console.log('🗺️ Map data received');
       this.mapData = mapData;
+
       const origin = mapData.info.origin.position;
+      const resolution = mapData.info.resolution;
+      const width = mapData.info.width;
+      const height = mapData.info.height;
 
       this.mapInfo = {
-        width: mapData.info.width,
-        height: mapData.info.height,
-        resolution: mapData.info.resolution,
+        width: width,
+        height: height,
+        resolution: resolution,
         origin: { x: origin.x, y: origin.y }
       };
 
-      this.canvasSize = { 
-        width: mapData.info.width, 
-        height: mapData.info.height 
-      };
+      this.canvasSize = { width: width, height: height };
 
-      this.$nextTick(() => this.renderMapToCanvas(mapData));
+      this.$nextTick(() => {
+        this.renderMapToCanvas(mapData);
+      });
     },
 
+    // Setup navigation monitoring
     setupNavigationMonitoring() {
-      // Navigation status monitoring
       this.navStatusTopic = new ROSLIB.Topic({
         ros: this.ros,
         name: '/bt_navigator/transition_event',
         messageType: 'lifecycle_msgs/msg/TransitionEvent'
       });
 
-      this.navStatusTopic.subscribe(this.handleNavigationTransition);
+      this.navStatusTopic.subscribe((msg) => {
+        console.log('🔄 Navigation transition:', msg);
+        this.handleNavigationTransition(msg);
+      });
+
+      this.btLogTopic = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/behavior_tree_log',
+        messageType: 'nav2_msgs/msg/BehaviorTreeLog'
+      });
+
+      this.btLogTopic.subscribe((msg) => {
+        this.handleBehaviorTreeLog(msg);
+      });
+
+      console.log('🎯 Navigation monitoring initialized');
     },
 
+    // Handle navigation transitions
     handleNavigationTransition(msg) {
-      if (msg.transition?.label === 'activate') {
-        this.navigationStatus = { status: 'Navigation Active', isActive: true };
+      if (msg.transition && msg.transition.label === 'activate') {
+        console.log('🚀 Navigation activated');
+        this.navigationStatus.status = 'Navigation Active';
+        this.navigationStatus.isActive = true;
+      } else if (msg.transition && msg.transition.label === 'deactivate') {
+        console.log('🛑 Navigation deactivated');
       }
     },
 
-    // ==================== UTILITY METHODS ====================
-    
-    getCanvasStyle() {
-      return {
-        width: (this.canvasSize.width * 2 * this.offset.scale) + 'px',
-        height: (this.canvasSize.height * 2 * this.offset.scale) + 'px',
-        cursor: this.interactionMode === 'addGoal' ? 'crosshair' : 'default'
-      };
+    // Handle behavior tree log for goal completion
+    handleBehaviorTreeLog(msg) {
+      if (msg.event === 3 && msg.current_status === 'SUCCESS') {
+        console.log('✅ Behavior Tree Goal Success detected');
+        this.handleGoalSuccess();
+      } else if (msg.event === 3 && msg.current_status === 'FAILURE') {
+        console.log('❌ Behavior Tree Goal Failure detected');
+        this.handleGoalFailure();
+      }
     },
 
+    // Rendering methods
     getGoalIndicatorStyle(goal) {
       if (!goal) return { left: '0px', top: '0px' };
 
@@ -785,46 +1446,33 @@ export default {
       };
     },
 
-    getGoalTooltip(goal) {
-      if (!goal) return 'Goal: No data';
-      const rvizGoal = this.getGoalForRViz(goal);
-      return `Web(${goal.x.toFixed(2)}, ${goal.y.toFixed(2)}) → RViz(${rvizGoal.x.toFixed(2)}, ${rvizGoal.y.toFixed(2)})`;
-    },
-
-    formatTimestamp(timestamp) {
-      if (!timestamp) return '';
-      return new Date(timestamp).toLocaleTimeString();
-    },
-
     updateStatus(message, statusClass, icon = '') {
       this.connectionStatus = { message, class: statusClass, icon };
-    },
-
-    // Single goal sending (for individual goal testing)
-    sendSingleGoal(goal) {
-      if (!this.isConnected || !goal) return;
-
-      const rvizGoal = this.getGoalForRViz(goal);
-      const goalMessage = new ROSLIB.Message({
-        header: { stamp: { sec: 0, nanosec: 0 }, frame_id: 'map' },
-        pose: {
-          position: { x: rvizGoal.x, y: rvizGoal.y, z: 0.0 },
-          orientation: { x: 0.0, y: 0.0, z: 0.0, w: 1.0 }
-        }
-      });
-
-      try {
-        this.goalTopic.publish(goalMessage);
-        this.navigationStatus = { status: 'Single Goal Sent', isActive: true };
-      } catch (error) {
-        console.error('Error sending goal:', error);
-      }
     }
   }
 };
 </script>
 
 <style scoped>
+/* CSS Variables */
+:root {
+  --primary-dark: #1a1a2e;
+  --primary-medium: #16213e;
+  --primary-light: #0f3460;
+  --card-bg: #2d3748;
+  --border-color: #4a5568;
+  --text-primary: #e2e8f0;
+  --text-secondary: #a0aec0;
+  --text-muted: #718096;
+  --accent-primary: #4a90e2;
+  --accent-success: #48bb78;
+  --accent-warning: #ecc94b;
+  --accent-danger: #f56565;
+  --hover-light: rgba(255, 255, 255, 0.05);
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.3);
+}
+
 /* Main Layout */
 .app-layout {
   display: flex;
@@ -832,6 +1480,7 @@ export default {
   background-color: var(--primary-dark);
   color: var(--text-primary);
   overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Sidebar */
@@ -1010,7 +1659,7 @@ export default {
   background-color: var(--primary-dark);
 }
 
-/* Your existing NAV2 styles */
+/* NAV2 Map Controller Styles */
 .nav2-map-controller {
   width: 100%;
   height: 100%;
@@ -1035,6 +1684,32 @@ export default {
 .subtitle {
   margin: 0;
   font-size: 16px;
+  color: var(--text-secondary);
+}
+
+/* ROS2 Version Info */
+.ros-version-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: rgba(74, 144, 226, 0.15);
+  border-radius: 6px;
+  margin-bottom: 15px;
+  border-left: 4px solid var(--accent-primary);
+}
+
+.version-badge {
+  background-color: var(--accent-primary);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.version-details {
+  font-size: 12px;
   color: var(--text-secondary);
 }
 
@@ -1289,6 +1964,311 @@ export default {
   box-shadow: 0 4px 8px var(--shadow-light);
 }
 
+/* Save Map Controls Styling */
+.save-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.flip-settings, .save-config {
+  padding: 15px;
+  background-color: var(--primary-medium);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.flip-settings h4, .save-config h4 {
+  margin: 0 0 12px 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.flip-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.checkbox-label:hover {
+  background-color: var(--hover-light);
+}
+
+.checkbox-input {
+  display: none;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.checkbox-input:checked + .checkmark {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.checkbox-input:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.coordinate-preview {
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.preview-title {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.preview-content {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.save-config {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.directory-info {
+  margin-bottom: 15px;
+}
+
+.info-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background-color: rgba(40, 167, 69, 0.15);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 6px;
+  color: #28a745;
+  font-size: 13px;
+}
+
+.info-success i {
+  font-size: 16px;
+}
+
+.info-success code {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.save-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.save-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.save-btn.primary {
+  background-color: var(--accent-success);
+  color: white;
+}
+
+.save-btn.primary:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.save-btn.secondary {
+  background-color: var(--primary-light);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.save-btn.secondary:hover:not(:disabled) {
+  background-color: var(--hover-light);
+  transform: translateY(-1px);
+}
+
+.save-btn.debug {
+  background-color: var(--accent-warning);
+  color: #212529;
+}
+
+.save-btn.debug:hover:not(:disabled) {
+  background-color: #e0a800;
+  transform: translateY(-1px);
+}
+
+.save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.service-info {
+  padding: 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  margin-top: 10px;
+  border-left: 4px solid var(--accent-primary);
+}
+
+.info-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.info-content {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-content div {
+  font-family: 'Courier New', monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 6px;
+  border-radius: 3px;
+}
+
+.save-status {
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.save-status.success {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.save-status.error {
+  background-color: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.save-status.warning {
+  background-color: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.save-status.info {
+  background-color: rgba(23, 162, 184, 0.15);
+  color: #17a2b8;
+  border: 1px solid rgba(23, 162, 184, 0.3);
+}
+
+.status-icon {
+  font-size: 16px;
+}
+
+.status-message {
+  font-weight: 500;
+}
+
+.troubleshooting-tips {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: rgba(108, 117, 125, 0.15);
+  border-radius: 6px;
+  border-left: 4px solid #6c757d;
+}
+
+.tips-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.tips-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.tips-list li {
+  margin-bottom: 4px;
+}
+
+.tips-list code {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
 /* Mission Info Styles */
 .mission-info {
   background-color: var(--primary-medium);
@@ -1493,12 +2473,6 @@ export default {
   text-align: center;
 }
 
-.mission-details p {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-primary);
-}
-
 .connection-controls {
   display: flex;
   gap: 10px;
@@ -1638,7 +2612,7 @@ button:not(:disabled):hover {
     justify-content: space-between;
   }
   
-  .mission-buttons, .connection-controls {
+  .mission-buttons, .connection-controls, .save-buttons {
     flex-direction: column;
   }
   
@@ -1650,6 +2624,48 @@ button:not(:disabled):hover {
   
   .info-value {
     text-align: left;
+  }
+
+  .flip-controls {
+    gap: 8px;
+  }
+  
+  .checkbox-text {
+    font-size: 13px;
+  }
+
+  .save-btn {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 10px;
+  }
+  
+  .page-title {
+    font-size: 16px;
+  }
+  
+  .header-section h1 {
+    font-size: 22px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+  
+  .control-panel {
+    padding: 15px;
+  }
+  
+  .save-controls {
+    gap: 15px;
+  }
+  
+  .flip-settings, .save-config {
+    padding: 12px;
   }
 }
 </style>

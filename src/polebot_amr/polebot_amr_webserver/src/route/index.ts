@@ -1,17 +1,32 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Login from '../components/Login.vue';
-import Register from '../components/Register.vue';
-import Dashboard from '../components/Dashboard.vue';
+import { createRouter, createWebHashHistory } from 'vue-router'
+import AppLayout from '../components/AppLayout.vue'
 
 const routes = [
-    { path: '/', name: 'Login', component: Login },
-    { path: '/register', name: 'Register', component: Register },
-    { path: '/dashboard', name: 'Dashboard', component: Dashboard},
-];
+  {
+    path: '/',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        redirect: '/map'
+      },
+      {
+        path: 'map',
+        name: 'GoalPlanning',
+        component: () => import('../components/GoalPlanning.vue')
+      },
+      {
+        path: 'mission',
+        name: 'MissionControl',
+        component: () => import('../components/MissionControl.vue')
+      }
+    ]
+  }
+]
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
-});
+  history: createWebHashHistory(),
+  routes
+})
 
-export default router;
+export default router
