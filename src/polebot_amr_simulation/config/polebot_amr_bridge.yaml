@@ -23,29 +23,29 @@
   gz_type_name: "gz.msgs.PointCloudPacked"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/depth_camera/camera_info"
-  gz_topic_name: "/depth_camera/camera_info"
-  ros_type_name: "sensor_msgs/msg/CameraInfo"
-  gz_type_name: "gz.msgs.CameraInfo"
-  direction: GZ_TO_ROS
+# - ros_topic_name: "/depth_camera/camera_info"
+#   gz_topic_name: "/depth_camera/camera_info"
+#   ros_type_name: "sensor_msgs/msg/CameraInfo"
+#   gz_type_name: "gz.msgs.CameraInfo"
+#   direction: GZ_TO_ROS
 
-- ros_topic_name: "/depth_camera/points"
-  gz_topic_name: "/depth_camera/points"
-  ros_type_name: "sensor_msgs/msg/PointCloud2"
-  gz_type_name: "gz.msgs.PointCloudPacked"
-  direction: GZ_TO_ROS
+# - ros_topic_name: "/depth_camera/points"
+#   gz_topic_name: "/depth_camera/points"
+#   ros_type_name: "sensor_msgs/msg/PointCloud2"
+#   gz_type_name: "gz.msgs.PointCloudPacked"
+#   direction: GZ_TO_ROS
 
-- ros_topic_name: "/depth_camera/rgb/image_raw"
-  gz_topic_name: "/depth_camera/rgb/image"
-  ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "gz.msgs.Image"
-  direction: GZ_TO_ROS
+# - ros_topic_name: "/depth_camera/rgb/image_raw"
+#   gz_topic_name: "/depth_camera/rgb/image"
+#   ros_type_name: "sensor_msgs/msg/Image"
+#   gz_type_name: "gz.msgs.Image"
+#   direction: GZ_TO_ROS
 
-- ros_topic_name: "/depth_camera/depth/image_raw"
-  gz_topic_name: "/depth_camera/depth/image"
-  ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "gz.msgs.Image"
-  direction: GZ_TO_ROS
+# - ros_topic_name: "/depth_camera/depth/image_raw"
+#   gz_topic_name: "/depth_camera/depth/image"
+#   ros_type_name: "sensor_msgs/msg/Image"
+#   gz_type_name: "gz.msgs.Image"
+#   direction: GZ_TO_ROS
 
 # Topic published by DiffDrive plugin
 - ros_topic_name: "/odom"
@@ -79,4 +79,5 @@
   ros_type_name: "tf2_msgs/msg/TFMessage"
   gz_type_name: "gz.msgs.Pose_V"
   direction: GZ_TO_ROS
-
+  ros_qos_durability: "transient_local"
+  ros_qos_reliability: "reliable"

@@ -22,24 +22,32 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
+    pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
+    nav2_bringup_launch_dir = os.path.join(pkg_nav2_bringup, 'launch')
     pkg_polebot_description = get_package_share_directory('polebot_amr_description')
     pkg_polebot_simulation = get_package_share_directory('polebot_amr_simulation')
     pkg_polebot_bringup = get_package_share_directory('polebot_amr_bringup')
-    
+
     # Create the launch configuration variables
+    slam = LaunchConfiguration('slam')
     namespace = LaunchConfiguration('namespace')
+    use_namespace = LaunchConfiguration('use_namespace')
+    map_yaml_file = LaunchConfiguration('map')
     use_sim_time = LaunchConfiguration('use_sim_time')
+    params_file = LaunchConfiguration('params_file')
+    autostart = LaunchConfiguration('autostart')
+    use_composition = LaunchConfiguration('use_composition')
+    use_respawn = LaunchConfiguration('use_respawn')
 
     # Launch configuration variables specific to simulation
     rviz_config_file = LaunchConfiguration('rviz_config_file')
     use_simulator = LaunchConfiguration('use_simulator')
     use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
     use_rviz = LaunchConfiguration('use_rviz')
-    use_rtabmap_viz = LaunchConfiguration('use_rtabmap_viz')
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='0.00'),
+        'x': LaunchConfiguration('x_pose', default='-2.00'),
         'y': LaunchConfiguration('y_pose', default='0.00'),
         'z': LaunchConfiguration('z_pose', default='0.35'),
         'R': LaunchConfiguration('roll', default='0.00'),
@@ -49,7 +57,6 @@ def generate_launch_description():
     robot_name = LaunchConfiguration('robot_name')
     robot_sdf = LaunchConfiguration('robot_sdf')
 
-    # Standard remappings
     remappings = [('/tf', 'tf'), ('/tf_static', 'tf_static')]
 
     # Declare the launch arguments
@@ -57,10 +64,50 @@ def generate_launch_description():
         'namespace', default_value='', description='Top-level namespace'
     )
 
+    declare_use_namespace_cmd = DeclareLaunchArgument(
+        'use_namespace',
+        default_value='false',
+        description='Whether to apply a namespace to the navigation stack',
+    )
+
+    declare_slam_cmd = DeclareLaunchArgument(
+        'slam', default_value='True', description='Whether run a SLAM'
+    )
+
+    declare_map_yaml_cmd = DeclareLaunchArgument(
+        'map',
+        default_value=os.path.join(pkg_nav2_bringup, 'maps', 'depot.yaml'),  # Try warehouse.yaml!
+        description='Full path to map file to load',
+    )
+
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
         default_value='true',
         description='Use simulation (Gazebo) clock if true',
+    )
+
+    declare_params_file_cmd = DeclareLaunchArgument(
+        'params_file',
+        default_value=os.path.join(pkg_polebot_bringup, 'config', 'polebot_amr_nav2_params.yaml'),
+        description='Full path to the ROS2 parameters file to use for all launched nodes',
+    )
+
+    declare_autostart_cmd = DeclareLaunchArgument(
+        'autostart',
+        default_value='true',
+        description='Automatically startup the nav2 stack',
+    )
+
+    declare_use_composition_cmd = DeclareLaunchArgument(
+        'use_composition',
+        default_value='True',
+        description='Whether to use composed bringup',
+    )
+
+    declare_use_respawn_cmd = DeclareLaunchArgument(
+        'use_respawn',
+        default_value='False',
+        description='Whether to respawn if a node crashes. Applied when composition is disabled.',
     )
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
@@ -84,12 +131,6 @@ def generate_launch_description():
     declare_use_rviz_cmd = DeclareLaunchArgument(
         'use_rviz', default_value='True', description='Whether to start RVIZ'
     )
-    
-    declare_use_rtabmap_viz_cmd = DeclareLaunchArgument(
-        'use_rtabmap_viz',
-        default_value='True',
-        description='Whether to start RTAB-Map visualization',
-    )
 
     declare_simulator_cmd = DeclareLaunchArgument(
         'headless', default_value='False', description='Whether to execute gzclient)'
@@ -97,7 +138,7 @@ def generate_launch_description():
 
     declare_world_cmd = DeclareLaunchArgument(
         'world',
-        default_value=os.path.join(pkg_polebot_simulation, 'world', 'depot.sdf'),
+        default_value=os.path.join(pkg_polebot_simulation, 'world', 'depot.sdf'),  # Try warehouse.sdf!
         description='Full path to world model file to load',
     )
 
@@ -110,58 +151,7 @@ def generate_launch_description():
         default_value=os.path.join(pkg_polebot_description, 'src', 'description', 'polebot_amr_description.sdf'),
         description='Full path to robot sdf file to spawn the robot in gazebo',
     )
-    
-    # --- RTAB-MAP NODES ---
-    
-    # Define the remappings for RTAB-Map to match your bridged topics
-    rtabmap_remappings = [
-        ('rgb/image', '/depth_camera/rgb/image_raw'),
-        ('depth/image', '/depth_camera/depth/image_raw'),
-        ('rgb/camera_info', '/depth_camera/camera_info'),
-        ('scan', '/scan'),
-        ('imu', '/imu'),
-        ('odom', '/odom'), # Use odometry from your robot's DiffDrive plugin
-    ]
-    rtabmap_remappings.extend(remappings)
 
-    # RTAB-Map SLAM node optimized for 3D mapping
-    rtabmap_node = Node(
-        package='rtabmap_slam',
-        executable='rtabmap',
-        name='rtabmap',
-        namespace=namespace,
-        output='screen',
-        parameters=[{
-            'frame_id': 'base_link',
-            'use_sim_time': use_sim_time,
-            'subscribe_depth': True,
-            'subscribe_rgb': True,
-            'subscribe_scan': False, # <-- FIX: Set to False. RTAB-Map will still subscribe to /scan, but outside the sync.
-            'subscribe_imu': False,  # <-- FIX: Set to False. We will rely on odom.
-            'approx_sync': True,
-            'approx_sync_odom': False, # <-- FIX: This is the key! Tells RTAB-Map NOT to put /odom in the sync group.
-            'Reg/Force3DoF': 'false', # Allow full 6DoF mapping
-            'Grid/FromDepth': 'true', # Create 3D grid from depth
-        }],
-        remappings=rtabmap_remappings,
-    )
-    
-    # RTAB-Map Viz node
-    rtabmap_viz_node = Node(
-        package='rtabmap_viz',
-        executable='rtabmap_viz',
-        name='rtabmap_viz',
-        namespace=namespace,
-        output='screen',
-        parameters=[{'use_sim_time': use_sim_time}],
-        remappings=rtabmap_remappings,
-        condition=IfCondition(use_rtabmap_viz),
-    )
-    
-    # --- END RTAB-MAP NODES ---
-
-    # --- SIMULATION NODES ---
-    
     start_robot_state_publisher_cmd = Node(
         condition=IfCondition(use_robot_state_pub),
         package='robot_state_publisher',
@@ -175,42 +165,54 @@ def generate_launch_description():
         remappings=remappings,
     )
 
-    # Launch RVIZ directly
-    rviz_cmd = Node(
+    rviz_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_launch_dir, 'rviz_launch.py')),
         condition=IfCondition(use_rviz),
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', rviz_config_file],
-        parameters=[{'use_sim_time': use_sim_time}],
-        namespace=namespace,
-        output='screen',
+        launch_arguments={
+            'namespace': namespace,
+            'use_namespace': use_namespace,
+            'use_sim_time': use_sim_time,
+            'rviz_config': rviz_config_file,
+        }.items(),
     )
 
-    # Process the world SDF file
-    world_sdf = tempfile.mktemp(prefix='nav2_', suffix='.sdf')
+    bringup_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(nav2_bringup_launch_dir, 'bringup_launch.py')),
+        launch_arguments={
+            'namespace': namespace,
+            'use_namespace': use_namespace,
+            'slam': slam,
+            'map': map_yaml_file,
+            'use_sim_time': use_sim_time,
+            'params_file': params_file,
+            'autostart': autostart,
+            'use_composition': use_composition,
+            'use_respawn': use_respawn,
+        }.items(),
+    )
+
+    # The SDF file for the world is a xacro file because we wanted to
+    # conditionally load the SceneBroadcaster plugin based on wheter we're
+    # running in headless mode. But currently, the Gazebo command line doesn't
+    # take SDF strings for worlds, so the output of xacro needs to be saved into
+    # a temporary file and passed to Gazebo.
+    world_sdf = tempfile.mktemp(prefix='polebot_', suffix='.sdf')
     world_sdf_xacro = ExecuteProcess(
         cmd=['xacro', '-o', world_sdf, ['headless:=', headless], world])
-    
-    # Gazebo server
     gazebo_server = ExecuteProcess(
         cmd=['gz', 'sim', '-r', '-s', world_sdf],
         output='screen',
         condition=IfCondition(use_simulator)
     )
 
-    # Remove the temp file on shutdown
     remove_temp_sdf_file = RegisterEventHandler(event_handler=OnShutdown(
         on_shutdown=[
             OpaqueFunction(function=lambda _: os.remove(world_sdf))
         ]))
 
-    # Set Gazebo resource path
     set_env_vars_resources = AppendEnvironmentVariable(
             'GZ_SIM_RESOURCE_PATH',
             os.path.join(pkg_polebot_simulation, 'world'))
-    
-    # Gazebo client
     gazebo_client = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('ros_gz_sim'),
@@ -222,7 +224,6 @@ def generate_launch_description():
         launch_arguments={'gz_args': ['-v4 -g ']}.items(),
     )
 
-    # Spawn the robot
     gz_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_polebot_simulation, 'launch', 'polebot_amr_spawn.launch.py')),
@@ -238,23 +239,99 @@ def generate_launch_description():
                           'pitch': pose['P'],
                           'yaw': pose['Y']}.items())
 
+    rosbridge_server_node = Node(
+        package='rosbridge_server',
+        executable='rosbridge_websocket',
+        name='rosbridge_websocket',
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+    orbbec_camera_launch_path = os.path.join(
+        get_package_share_directory('orbbec_camera'),
+        'launch',
+        'astra.launch.py'
+    )
+
+    orbbec_camera_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(orbbec_camera_launch_path),
+        launch_arguments={
+            # 'use_sim_time': use_sim_time,
+            'color_width': '640',
+            'color_height': '480',
+            'color_fps': '10',
+            'color_format': 'MJPG',
+            'depth_width': '640',
+            'depth_height': '480',
+            'depth_fps': '10',
+            'depth_format': 'Y11'
+        }.items()
+    )
+
+    rtabmap_node = Node(
+        package='rtabmap_slam',
+        executable='rtabmap',
+        name='rtabmap',
+        output='screen',
+        parameters=[{
+            'use_sim_time': False,
+            # 'subscribe_scan': True,
+            'subscribe_depth': True,
+            'subscribe_rgb': True,
+            'approx_sync': True,
+            'queue_size': 100,
+            'approx_sync_max_interval': 2.0,
+            'frame_id': 'base_footprint',
+        }],
+        remappings=[
+            # ('rgb/image', '/depth_camera/rgb/image_raw'),
+            # ('depth/image', '/depth_camera/depth/image_raw'),
+            # ('rgb/camera_info', '/depth_camera/camera_info'),
+            ('rgb/image', '/camera/color/image_raw'),
+            ('depth/image', '/camera/depth/image_raw'),
+            ('rgb/camera_info', '/camera/color/camera_info'),
+            ('odom', '/odom'),
+        ],
+        arguments=['--delete_db_on_start']
+    )
+
+    rtabmap_viz_node = Node(
+        package='rtabmap_viz',
+        executable='rtabmap_viz',
+        name='rtabmap_viz',
+        parameters=[{'use_sim_time': False}],
+        remappings=[
+            # ('rgb/image', '/depth_camera/rgb/image_raw'),
+            # ('depth/image', '/depth_camera/depth/image_raw'),
+            # ('rgb/camera_info', '/depth_camera/camera_info'),
+            ('rgb/image', '/camera/color/image_raw'),
+            ('depth/image', '/camera/depth/image_raw'),
+            ('rgb/camera_info', '/camera/color/camera_info'),
+        ]
+    )
     # Create the launch description and populate
     ld = LaunchDescription()
 
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
+    ld.add_action(declare_use_namespace_cmd)
+    ld.add_action(declare_slam_cmd)
+    ld.add_action(declare_map_yaml_cmd)
     ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_params_file_cmd)
+    ld.add_action(declare_autostart_cmd)
+    ld.add_action(declare_use_composition_cmd)
+
     ld.add_action(declare_rviz_config_file_cmd)
     ld.add_action(declare_use_simulator_cmd)
     ld.add_action(declare_use_robot_state_pub_cmd)
     ld.add_action(declare_use_rviz_cmd)
-    ld.add_action(declare_use_rtabmap_viz_cmd)
     ld.add_action(declare_simulator_cmd)
     ld.add_action(declare_world_cmd)
     ld.add_action(declare_robot_name_cmd)
     ld.add_action(declare_robot_sdf_cmd)
+    ld.add_action(declare_use_respawn_cmd)
 
-    # Add simulation actions
     ld.add_action(set_env_vars_resources)
     ld.add_action(world_sdf_xacro)
     ld.add_action(gazebo_server)
@@ -262,11 +339,14 @@ def generate_launch_description():
     ld.add_action(gz_robot)
     ld.add_action(remove_temp_sdf_file)
 
-    # Add core actions
+    # Add the actions to launch all of the navigation nodes
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(rviz_cmd)
-    
-    # Add RTAB-Map actions
+    ld.add_action(bringup_cmd)
+    ld.add_action(rosbridge_server_node)
+
+    ld.add_action(orbbec_camera_launch)
+
     ld.add_action(rtabmap_node)
     ld.add_action(rtabmap_viz_node)
 

@@ -7,8 +7,11 @@ Panels:
         - /Global Options1
         - /TF1/Frames1
         - /TF1/Tree1
-      Splitter Ratio: 0.5833333134651184
-    Tree Height: 268
+        - /DepthCamera1
+        - /DepthCloud1/Status1
+        - /DepthCloud1/Auto Size1
+      Splitter Ratio: 0.3968254029750824
+    Tree Height: 866
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -85,6 +88,14 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
+        camera_color_frame:
+          Value: true
+        camera_color_optical_frame:
+          Value: true
+        camera_depth_frame:
+          Value: true
+        camera_depth_optical_frame:
+          Value: true
         camera_link:
           Value: true
         casterwhl_fl_link:
@@ -105,6 +116,8 @@ Visualization Manager:
           Value: true
         map:
           Value: true
+        monitor_link:
+          Value: true
         odom:
           Value: true
       Marker Scale: 1
@@ -119,7 +132,12 @@ Visualization Manager:
               base_footprint:
                 {}
               camera_link:
-                {}
+                camera_depth_frame:
+                  camera_color_frame:
+                    camera_color_optical_frame:
+                      {}
+                  camera_depth_optical_frame:
+                    {}
               casterwhl_fl_link:
                 {}
               casterwhl_fr_link:
@@ -135,6 +153,8 @@ Visualization Manager:
               imu_link:
                 {}
               lidar_link:
+                {}
+              monitor_link:
                 {}
       Update Interval: 0
       Value: true
@@ -488,14 +508,14 @@ Visualization Manager:
           Max Value: 1
           Median window: 5
           Min Value: 0
-          Name: RealsenseCamera
+          Name: RgbImage
           Normalize Range: true
           Topic:
             Depth: 5
             Durability Policy: Volatile
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /intel_realsense_r200_depth/image_raw
+            Value: /camera/color/image_raw
           Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
@@ -515,7 +535,7 @@ Visualization Manager:
           Max Intensity: 4096
           Min Color: 0; 0; 0
           Min Intensity: 0
-          Name: RealsenseDepthImage
+          Name: DepthImage
           Position Transformer: XYZ
           Selectable: true
           Size (Pixels): 3
@@ -526,12 +546,12 @@ Visualization Manager:
             Durability Policy: Volatile
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /intel_realsense_r200_depth/points
+            Value: /camera/depth/points
           Use Fixed Frame: true
           Use rainbow: true
           Value: true
       Enabled: false
-      Name: Realsense
+      Name: DepthCamera
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: MarkerArray
@@ -544,6 +564,45 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /waypoints
       Value: true
+    - Alpha: 1
+      Auto Size:
+        Auto Size Factor: 1
+        Value: true
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/DepthCloud
+      Color: 255; 255; 255
+      Color Image Topic: /camera/color/image_raw
+      Color Transformer: RGB8
+      Color Transport Hint: raw
+      Decay Time: 0
+      Depth Map Topic: /camera/depth/image_raw
+      Depth Map Transport Hint: raw
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: DepthCloud
+      Occlusion Compensation:
+        Occlusion Time-Out: 30
+        Value: false
+      Position Transformer: ""
+      Queue Size: 5
+      Reliability Policy: Best effort
+      Selectable: true
+      Size (Pixels): 3
+      Style: Flat Squares
+      Topic Filter: true
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -606,9 +665,9 @@ Window Geometry:
   Hide Left Dock: true
   Hide Right Dock: true
   Navigation 2:
-    collapsed: true
-  QMainWindow State: 000000ff00000000fd00000004000000000000015600000395fc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000100044006900730070006c006100790073000000003f0000014c000000cc00fffffffb00000018004e0061007600690067006100740069006f006e00200032000000019100000243000001f800fffffffb0000001e005200650061006c00730065006e0073006500430061006d00650072006100000002c6000000c10000001700ffffff000000010000014700000395fc0200000005fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003f000000ff000000a900fffffffb0000000e0044006f0063006b0069006e00670000000144000001970000016200fffffffb0000001000530065006c006500630074006f007200000002e1000000f3000000d300fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d006501000000000000045000000000000000000000039f0000039500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
-  RealsenseCamera:
+    collapsed: false
+  QMainWindow State: 000000ff00000000fd0000000400000000000001f90000039dfc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000100044006900730070006c006100790073000000003b0000039d000000c700fffffffb00000018004e0061007600690067006100740069006f006e002000320000000211000001c7000001c700fffffffb000000100052006700620049006d00610067006500000003390000009f0000001600ffffff000000010000014700000395fc0200000005fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003f000000ff000000a000fffffffb0000000e0044006f0063006b0069006e00670000000144000001970000013900fffffffb0000001000530065006c006500630074006f007200000002e1000000f3000000ba00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003260000039d00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  RgbImage:
     collapsed: false
   Selection:
     collapsed: false
@@ -618,6 +677,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
-  Width: 927
-  X: 993
-  Y: 32
+  Width: 806
+  X: 1069
+  Y: -33
