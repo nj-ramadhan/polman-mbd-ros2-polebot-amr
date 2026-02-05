@@ -44,9 +44,16 @@ For easy re-deployment, use the `ros2-apt-source` package to automatically confi
 #### **3. Re-deployment Automation (Environment Setup)**
 To avoid manually running setup scripts every time you open a terminal, automate the environment variables.
 
+*   **Clone this Repository:**
+    ```bash
+    git clone https://github.com/nj-ramadhan/polman-mbd-ros2-polebot-amr.git
+    ```
+
+
 *   **Configure Bash Session:**
     ```bash
     echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
+    echo "source ~/polebot_amr_ws/install/setup.bash" >> ~/.bashrc
     source ~/.bashrc
     ```
     *This command tells your computer how to find ROS 2 commands automatically in every new terminal window.*
@@ -94,3 +101,171 @@ When documenting new code for Polebot AMR, remember these three vital ROS 2 term
 3.  **Subscribers:** Programs (like wheel controllers) that receive data to act upon it (e.g., stopping if an obstacle is detected).
 
 The Polebot AMR code is distributed under the **GPL-3.0 license**. For easier workspace management, you may use the provided `.code-workspace` file in the repository.
+
+
+# Install all missing dependencies automatically
+```bash
+rosdep install --from-paths src --ignore-src -r -y
+```
+
+# Enter the src folder to clone depedencies
+```bash
+cd src
+git clone https://github.com/nj-ramadhan/ros2_serial.git
+git clone https://github.com/nj-ramadhan/ros2_lsc.git
+git clone https://github.com/nj-ramadhan/ros2_roboteq.git
+git clone https://github.com/nj-ramadhan/ros2_orbbec.git
+```
+
+## ORBBEC Installation Instructions
+### Install ROS 2
+
+Please refer to the official ROS 2 installation guide guidance
+If your ROS 2 command does not auto-complete, put the following two lines into your .bashrc or .zshrc
+```bash
+eval "$(register-python-argcomplete3 ros2)"
+eval "$(register-python-argcomplete3 colcon)"
+```
+
+### Install deb dependencies
+# assume you have sourced ROS environment, same blow
+```bash
+sudo apt install libgflags-dev nlohmann-json3-dev  \
+ros-$ROS_DISTRO-image-transport  ros-${ROS_DISTRO}-image-transport-plugins ros-${ROS_DISTRO}-compressed-image-transport \
+ros-$ROS_DISTRO-image-publisher ros-$ROS_DISTRO-camera-info-manager \
+ros-$ROS_DISTRO-diagnostic-updater ros-$ROS_DISTRO-diagnostic-msgs ros-$ROS_DISTRO-statistics-msgs \
+ros-$ROS_DISTRO-backward-ros libdw-dev
+```
+
+### Install udev rules.
+```bash
+cd  ~/polebot_amr_ws/src/ros2_orbbec/orbbec_camera/scripts
+sudo bash install_udev_rules.sh
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+Getting start
+```bash
+cd ~/polebot_amr_ws/
+```
+
+# build release, Default is Debug
+```bash
+colcon build --event-handlers  console_direct+  --cmake-args  -DCMAKE_BUILD_TYPE=Release
+```
+
+Launch camera node
+
+On terminal 1
+. ./install/setup.bash
+ros2 launch orbbec_camera astra.launch.py
+On terminal 2
+. ./install/setup.bash
+rviz2
+Select the topic you want to display
+
+List topics / services/ parameters ( on terminal 3)
+ros2 topic list
+ros2 service list
+ros2 param list
+Get device info
+ros2 service call /camera/get_device_info orbbec_camera_msgs/srv/GetDeviceInfo '{}'
+Get SDK version
+ros2 service call /camera/get_sdk_version orbbec_camera_msgs/srv/GetString '{}'
+Get exposure
+ros2 service call /camera/get_color_exposure orbbec_camera_msgs/srv/GetInt32 '{}'
+If your check ir or depth, please change /camera/get_color_exposure to /camera/get_ir_exposure or /camera/get_depth_exposure, Same below.
+
+Get gain
+ros2 service call /camera/get_color_gain orbbec_camera_msgs/srv/GetInt32 '{}'
+Get white balance
+ros2 service call /camera/get_white_balance orbbec_camera_msgs/srv/GetInt32 '{}'
+Set auto exposure
+ros2 service call /camera/set_color_auto_exposure std_srvs/srv/SetBool '{data: false}'
+Set white balance
+ros2 service call /camera/set_white_balance orbbec_camera_msgs/srv/SetInt32 '{data: 4600}'
+Set laser enable
+ros2 service call  /camera/set_laser_enable std_srvs/srv/SetBool "{data: true}"
+toggle sensor
+ros2 service call /camera/toggle_ir std_srvs/srv/SetBool "{data : true}"
+save point cloud
+ros2 service call /camera/save_point_cloud std_srvs/srv/Empty "{}"
+
+
+## Check for Roboteq Driver
+Note on Permissions (Outside Source Information): If you find the correct port but still get an error, it might be a permission issue. You may need to grant access to the dialout group using 
+```bash
+sudo usermod -a -G dialout $USER
+```
+and then restart your session.
+
+## install joint_state_publisher
+```bash
+sudo apt-get install ros-jazzy-joint-state-publisher
+```
+
+## install rtab_map
+```bash
+sudo apt-get install ros-jazzy-rtabmap ros-jazzy-rtabmap-odom ros-jazzy-rtabmap-viz ros-jazzy-rtabmap-slam -y
+```
+
+## install Nav2
+```bash
+sudo apt-get install ros-jazzy-nav2-bringup -y
+```
+
+## install Resbridge Server and NPM for GUI server
+```bash
+sudo apt install ros-jazzy-rosbridge-server -y
+```
+
+### Install NPM, makes sure it's latest version to support vite.js
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+nvm install node
+```
+
+### Run GUI Front-end
+```bash
+cd ~/polebot_amr_ws/src/polebot_amr/polebot_amr_webserver
+npm install
+npm run dev
+```
+
+### Install Database back-end
+#### Install MariaDB for Backend
+```bash
+sudo apt install mariadb-server
+sudo systemctl status mariadb
+```
+
+#### Install PHP my Admin for Backend
+```bash
+sudo apt install phpmyadmin
+```
+choose apache
+choose yes for password config
+input your PASSWORD
+
+```bash
+sudo mysql
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'amr2025';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+CREATE USER 'amr'@'localhost' IDENTIFIED BY 'amr2025';
+GRANT ALL PRIVILEGES ON *.* TO 'amr'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+CREATE DATABASE polebot;
+exit
+
+sudo mysql -u amr -p polebot < polebot.sql
+```
+
+### Run GUI Back-end
+```bash
+cd ~/polebot_amr_ws/src/polebot_amr/polebot_amr_webserver_backend
+npm install
+node index.js
+```

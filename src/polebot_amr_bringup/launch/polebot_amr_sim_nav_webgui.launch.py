@@ -247,6 +247,22 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}]
     )
 
+    # GUI Back-end Process
+    # Source [2] specifies the path: ~/polebot_amr_ws/src/polebot_amr/polebot_amr_webserver_backend
+    gui_backend = ExecuteProcess(
+        cmd=['node', 'index.js'],
+        cwd=os.path.expanduser('~/polebot_amr_ws/src/polebot_amr/polebot_amr_webserver_backend'),
+        output='screen'
+    )
+
+    # GUI Front-end Process
+    # Source [3] specifies the path: ~/polebot_amr_ws/src/polebot_amr/polebot_amr_webserver
+    gui_frontend = ExecuteProcess(
+        cmd=['npm', 'run', 'dev'],
+        cwd=os.path.expanduser('~/polebot_amr_ws/src/polebot_amr/polebot_amr_webserver'),
+        output='screen'
+    )
+
     # Create the launch description and populate
     ld = LaunchDescription()
 
@@ -282,5 +298,7 @@ def generate_launch_description():
     ld.add_action(rviz_cmd)
     ld.add_action(bringup_cmd)
     ld.add_action(rosbridge_server_node)
+    ld.add_action(gui_backend)
+    ld.add_action(gui_frontend)
 
     return ld

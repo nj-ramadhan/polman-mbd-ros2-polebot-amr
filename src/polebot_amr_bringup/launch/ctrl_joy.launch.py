@@ -13,25 +13,6 @@ def generate_launch_description():
     pkg_polebot_bringup = get_package_share_directory('polebot_amr_bringup')    
     joy_params = os.path.join(pkg_polebot_bringup,'config','polebot_amr_joystick_params.yaml')
 
-    # fake_odom_node = Node(
-    #     package='polebot_amr_bringup',
-    #     executable='fake_odom_publisher',
-    #     name='fake_odom_publisher',
-    #     output='screen'
-    # )
-
-    roboteq_config = os.path.join(pkg_polebot_bringup, 'config',
-        'polebot_amr_roboteq.yaml')
-
-    # Nodes
-    roboteq_driver_launch = Node(
-        package='roboteq_ros2_driver',
-        executable='roboteq_ros2_driver',
-        name='roboteq_ros2_driver',
-        output='screen',
-        parameters=[roboteq_config],
-    )
-
     joy_node = Node(
             package='joy',
             executable='joy_node',
@@ -52,7 +33,4 @@ def generate_launch_description():
             description='Use sim time if true'),
         joy_node,
         teleop_node,
-        # fake_odom_node,
-        roboteq_driver_launch,
-
     ])

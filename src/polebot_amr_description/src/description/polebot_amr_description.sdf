@@ -229,10 +229,13 @@
         <collision name="${prefix}_link_collision">
           <pose relative_to="${prefix}_link">0 0 0 ${pi/2} 0 0</pose>
           <geometry>
-            <cylinder>
+            <!-- <cylinder>
               <radius>${caster_radius}</radius>
               <length>${caster_width}</length>
-            </cylinder>
+            </cylinder> -->
+            <sphere> 
+              <radius>${caster_radius}</radius>
+            </sphere>
           </geometry>
           <surface><friction><ode>
             <fdir1>1 0 0</fdir1>   <!-- μ along X (rolling), μ₂ along Y (slip) -->

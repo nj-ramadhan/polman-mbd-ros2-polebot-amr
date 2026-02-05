@@ -53,6 +53,9 @@ qtcreator-*
 # Catkin custom files
 CATKIN_IGNORE
 
+# nodejs
+node_modules
+package-lock.json
 
 # VSCode
 *.vc.db
