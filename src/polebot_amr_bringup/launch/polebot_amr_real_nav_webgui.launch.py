@@ -14,7 +14,8 @@ def generate_launch_description():
     pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
     pkg_polebot_description = get_package_share_directory('polebot_amr_description')
     pkg_polebot_bringup = get_package_share_directory('polebot_amr_bringup')
-
+    joy_params = os.path.join(pkg_polebot_bringup,'config','polebot_amr_joystick_params.yaml')
+    
     # --- Launch configurations ---
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
@@ -27,6 +28,7 @@ def generate_launch_description():
     namespace = LaunchConfiguration('namespace')
     use_composition = LaunchConfiguration('use_composition')
     use_respawn = LaunchConfiguration('use_respawn')
+    use_teleop = LaunchConfiguration('use_teleop')
 
     # --- Declare launch arguments ---
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -86,6 +88,11 @@ def generate_launch_description():
     declare_use_respawn_cmd = DeclareLaunchArgument(
         'use_respawn', default_value='False',
         description='Whether to respawn crashed nodes (when composition is disabled)'
+    )
+
+    declare_use_teleop_cmd = DeclareLaunchArgument(
+        'use_teleop', default_value='False',
+        description='Whether to use teleop control'
     )
 
     # --- Robot description (URDF/SDF) ---
@@ -248,6 +255,30 @@ def generate_launch_description():
         output='screen'
     )
 
+    roboteq_config = os.path.join(pkg_polebot_bringup, 'config/roboteq',
+        'polebot_amr_roboteq.yaml')
+
+    # Nodes
+    roboteq_driver_launch = Node(
+        package='roboteq_ros2_driver',
+        executable='roboteq_ros2_driver',
+        name='roboteq_ros2_driver',
+        output='screen',
+        parameters=[roboteq_config],
+    )
+
+    if use_teleop:
+        joy_node = Node(
+                package='joy',
+                executable='joy_node',
+            )
+
+        teleop_node = Node(
+                package='teleop_twist_joy',
+                executable='teleop_node',
+                name='teleop_node',
+            )
+    
     # --- Assemble LaunchDescription ---
     ld = LaunchDescription()
 
@@ -263,6 +294,7 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_composition_cmd)
     ld.add_action(declare_use_respawn_cmd)
+    ld.add_action(declare_use_teleop_cmd)
 
     # Robot state
     ld.add_action(robot_state_publisher_node)
@@ -274,7 +306,7 @@ def generate_launch_description():
     # ld.add_action(orbbec_camera_launch)
 
     ld.add_action(fake_odom_node)
-    ld.add_action(static_tf_map_odom)
+    # ld.add_action(static_tf_map_odom)
     
     ld.add_action(start_slam_toolbox_node)
 
@@ -285,5 +317,9 @@ def generate_launch_description():
     ld.add_action(rosbridge_server_node)
     ld.add_action(gui_backend)
     ld.add_action(gui_frontend)
+
+    ld.add_action(roboteq_driver_launch)
+    ld.add_action(joy_node)
+    ld.add_action(teleop_node)
 
     return ld

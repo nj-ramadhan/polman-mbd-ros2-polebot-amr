@@ -14,6 +14,7 @@ def generate_launch_description():
     pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
     pkg_polebot_description = get_package_share_directory('polebot_amr_description')
     pkg_polebot_bringup = get_package_share_directory('polebot_amr_bringup')
+    joy_params = os.path.join(pkg_polebot_bringup,'config','polebot_amr_joystick_params.yaml')
 
     # --- Launch configurations ---
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -224,6 +225,31 @@ def generate_launch_description():
         }.items(),
     )
 
+    roboteq_config = os.path.join(pkg_polebot_bringup, 'config/roboteq',
+        'polebot_amr_roboteq.yaml')
+
+    # Nodes
+    roboteq_driver_launch = Node(
+        package='roboteq_ros2_driver',
+        executable='roboteq_ros2_driver',
+        name='roboteq_ros2_driver',
+        output='screen',
+        parameters=[roboteq_config],
+    )
+
+    joy_node = Node(
+            package='joy',
+            executable='joy_node',
+            parameters=[joy_params, {'use_sim_time': use_sim_time}],
+         )
+
+    teleop_node = Node(
+            package='teleop_twist_joy',
+            executable='teleop_node',
+            name='teleop_node',
+            parameters=[joy_params, {'use_sim_time': use_sim_time}],
+         )
+    
     # --- Assemble LaunchDescription ---
     ld = LaunchDescription()
 
@@ -257,5 +283,9 @@ def generate_launch_description():
     # Navigation & Visualization
     ld.add_action(nav2_bringup_launch)
     ld.add_action(rviz_launch)
+
+    ld.add_action(roboteq_driver_launch)
+    ld.add_action(joy_node)
+    ld.add_action(teleop_node)
 
     return ld
